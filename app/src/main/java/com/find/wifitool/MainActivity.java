@@ -1,30 +1,27 @@
 package com.find.wifitool;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.find.wifitool.internal.Constants;
+
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
@@ -70,8 +67,8 @@ public class MainActivity extends AppCompatActivity
         sharedPreferences = getSharedPreferences(Constants.PREFS_NAME, 0);
         setDefaultPrefs();
 
-        // Set the Learn Fragment as default
-        Fragment fragment = new LearnFragment();
+        // Set the Navigate Fragment as default
+        Fragment fragment = new NavigateFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.content, fragment)
@@ -108,7 +105,8 @@ public class MainActivity extends AppCompatActivity
         boolean isFirstRun = sharedPreferences.contains(Constants.IS_FIRST_RUN);
 
         if(isFirstRun == false) {
-            editor.putString(Constants.USER_NAME, Constants.DEFAULT_USERNAME);
+            String  uniqueID = "user" + UUID.randomUUID().toString();
+            editor.putString(Constants.USER_NAME, uniqueID);
             editor.putString(Constants.SERVER_NAME, Constants.DEFAULT_SERVER);
             editor.putString(Constants.GROUP_NAME, Constants.DEFAULT_GROUP);
             editor.putInt(Constants.TRACK_INTERVAL, Constants.DEFAULT_TRACKING_INTERVAL);
@@ -129,7 +127,7 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -158,7 +156,7 @@ public class MainActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-
+*/
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -170,6 +168,8 @@ public class MainActivity extends AppCompatActivity
             fragment = new SettingsFragment();
         } else if (id == R.id.nav_track) {
             fragment = new TrackFragment();
+        } else if (id == R.id.nav_floorplan) {
+            fragment = new NavigateFragment();
         } else {
             // Anything else is home
             fragment = new LearnFragment();
