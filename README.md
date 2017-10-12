@@ -1,11 +1,9 @@
-# FIND- Indoor Positioning System (Android Client App)
+# Phillips FIND
 
-This client app helps you get started with FIND development. With this app you can easily:
-
- - "Learn": connect to the server and then submit fingerprints.
- - "Track": track what room you are in using just the WiFi networks around you
- - more coming soon...
-All this using less battery and with higher accuracy indoors than the GPS.
+This app is an extension of the FIND Android Client indoor positioning system, built for the needs of the Phillips Collection in DC.
+ - "Navigate": view your current room on a floorplan of the Phillips Collection, based on FIND's "Track" function (RSSI-based Wifi positioning)
+ - "Explore": interact with an Apple-watch-inspired list of the artwork nearby
+ - "Learn": connect to the server and then submit fingerprints. (temporary)
 
 ----------
 
