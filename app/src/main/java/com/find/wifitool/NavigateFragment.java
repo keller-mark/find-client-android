@@ -66,8 +66,6 @@ public class NavigateFragment extends Fragment {
     private ImageView floorImageView;
     private Button setPointButton;
 
-    private HashMap<String, Object> roomCoordinates = new HashMap<String, Object>();
-
     Handler handler = new Handler();
 
     /**
