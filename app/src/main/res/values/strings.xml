@@ -15,4 +15,12 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="click_to_set">[click to set]</string>
+    <string-array name="floors_array">
+        <item>building</item>
+        <item>f1</item>
+        <item>f2</item>
+        <item>f3</item>
+        <item>f4</item>
+        <item>f5</item>
+    </string-array>
 </resources>

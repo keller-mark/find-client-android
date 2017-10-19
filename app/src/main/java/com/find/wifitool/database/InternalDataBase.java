@@ -24,6 +24,14 @@ public class InternalDataBase extends SQLiteOpenHelper {
     private static final String COLUMN_USER = "WIFIUSER";
     private static final int DATABASE_VERSION = 1;
 
+    private static final String LT_TABLE_NAME = "locations";
+    private static final String LT_COLUMN_ID = "ID";
+    private static final String LT_COLUMN_LOC_NAME = "loc_name";
+    private static final String LT_COLUMN_FLOOR_INDEX = "floor_index";
+    private static final String LT_COLUMN_X = "loc_x";
+    private static final String LT_COLUMN_Y = "loc_y";
+    private static final String LT_COLUMN_RATIO = "loc_ratio";
+
     public InternalDataBase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -35,14 +43,23 @@ public class InternalDataBase extends SQLiteOpenHelper {
                 + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_NAME + " VARCHAR, "
                 + COLUMN_GROUP + " VARCHAR, "
-                + COLUMN_USER + " VARCHAR);";
+                + COLUMN_USER + " VARCHAR);"
+
+                + "CREATE TABLE " + LT_TABLE_NAME
+                + "(" + LT_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + LT_COLUMN_LOC_NAME + " VARCHAR, "
+                + LT_COLUMN_FLOOR_INDEX + " INTEGER, "
+                + LT_COLUMN_X + " REAL, "
+                + LT_COLUMN_Y + " REAL, "
+                + LT_COLUMN_RATIO + " REAL);";
 
         db.execSQL(sql);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String sql = "DROP TABLE IF EXISTS" + TABLE_NAME;
+        String sql = "DROP TABLE IF EXISTS" + TABLE_NAME + ";"
+                + "DROP TABLE IF EXISTS" + LT_TABLE_NAME;
         db.execSQL(sql);
         onCreate(db);
     }
@@ -81,6 +98,47 @@ public class InternalDataBase extends SQLiteOpenHelper {
         }
         cursor.close();
         return eventList;
+    }
+
+
+    public void addLocation(FloorLocation loc) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(LT_COLUMN_LOC_NAME, loc.getLocName());
+        values.put(LT_COLUMN_FLOOR_INDEX, loc.getFloorIndex());
+        values.put(LT_COLUMN_X, loc.getLocX());
+        values.put(LT_COLUMN_Y, loc.getLocY());
+        values.put(LT_COLUMN_RATIO, loc.getLocRatio());
+
+        db.insert(LT_TABLE_NAME, null, values);
+        db.close();
+    }
+
+    // Getting all records
+    public FloorLocation getLocation(String locName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery("SELECT * FROM " + LT_TABLE_NAME + " WHERE " + LT_COLUMN_LOC_NAME + "=? LIMIT 1", new String[] {locName});
+
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+
+                FloorLocation loc = new FloorLocation();
+                loc.setID(Integer.parseInt(cursor.getString(cursor.getColumnIndex(LT_COLUMN_ID))));
+                loc.setLocName(cursor.getString(cursor.getColumnIndex(LT_COLUMN_LOC_NAME)));
+                loc.setFloorIndex(Integer.parseInt(cursor.getString(cursor.getColumnIndex(LT_COLUMN_FLOOR_INDEX))));
+                loc.setLocX(Double.parseDouble(cursor.getString(cursor.getColumnIndex(LT_COLUMN_X))));
+                loc.setLocY(Double.parseDouble(cursor.getString(cursor.getColumnIndex(LT_COLUMN_Y))));
+                loc.setLocRatio(Double.parseDouble(cursor.getString(cursor.getColumnIndex(LT_COLUMN_RATIO))));
+
+                return loc;
+            }
+        } finally {
+            cursor.close();
+        }
+        return null;
     }
 
     // Deleting all records

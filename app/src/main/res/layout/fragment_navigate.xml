@@ -12,30 +12,55 @@
     android:keepScreenOn="true"
     tools:context="com.findTools.Find.NavigateFragment">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:src="@drawable/building"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="280dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="20dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerInParent="false"
-        android:layout_alignWithParentIfMissing="false"
-        android:layout_centerVertical="false" />
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/labelLocationName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Determining"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:layout_below="@+id/imageView"
-        android:textSize="32sp"
-        android:textColor="#757575"
-        android:textStyle="normal|bold"
-        android:layout_centerInParent="false"
-        android:layout_alignWithParentIfMissing="false"
-        android:layout_centerVertical="false" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/floorImageView"
+                android:src="@drawable/building"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+ />
+
+            <ImageView
+                android:id="@+id/geomarkerImageView"
+                android:src="@drawable/geo_marker"
+                android:layout_width="30dp"
+                android:layout_height="30dp" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/labelLocationName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Determining"
+            android:layout_marginTop="10dp"
+            android:textSize="32sp"
+            android:textColor="#757575"
+            android:textStyle="normal|bold"
+            android:layout_gravity="center_horizontal"/>
+
+
+
+        <Spinner
+            android:id="@+id/changeFloorSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/setPointButton"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set Point"/>
+
+    </LinearLayout>
+
 </RelativeLayout>

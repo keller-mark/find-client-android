@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,12 +18,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.find.wifitool.internal.Constants;
 import com.find.wifitool.internal.Utils;
 import com.find.wifitool.wifi.WifiIntentReceiver;
+
+import java.util.HashMap;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,6 +61,12 @@ public class NavigateFragment extends Fragment {
     private int trackVal;
 
     private TextView currLocView;
+
+    private Spinner changeFloorSpinner;
+    private ImageView floorImageView;
+    private Button setPointButton;
+
+    private HashMap<String, Object> roomCoordinates = new HashMap<String, Object>();
 
     Handler handler = new Handler();
 
@@ -121,6 +135,12 @@ public class NavigateFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_navigate, container, false);
         currLocView = (TextView)rootView.findViewById(R.id.labelLocationName);
+        floorImageView = (ImageView)rootView.findViewById(R.id.floorImageView);
+        changeFloorSpinner = (Spinner)rootView.findViewById(R.id.changeFloorSpinner);
+        this.populateFloorSpinner();
+        setPointButton = (Button)rootView.findViewById(R.id.setPointButton);
+
+
         handler.post(runnableCode);
 
         // Listener to the broadcast message from WifiIntent
@@ -138,8 +158,14 @@ public class NavigateFragment extends Fragment {
             String currLocation = intent.getStringExtra("location");
             currLocView.setTextColor(getResources().getColor(R.color.currentLocationColor));
             currLocView.setText(currLocation);
+
+            enableSetPointButton();
         }
     };
+
+    private void enableSetPointButton() {
+        this.setPointButton.setVisibility(View.VISIBLE);
+    }
 
     // Timers to keep track of our Tracking period
     private Runnable runnableCode = new Runnable() {
@@ -153,7 +179,7 @@ public class NavigateFragment extends Fragment {
                     intent.putExtra("userName", strUsername);
                     intent.putExtra("serverName", strServer);
                     intent.putExtra("locationName", sharedPreferences.getString(Constants.LOCATION_NAME, ""));
-                    mContext.startService(intent);
+                    mContext.startService(intent); /* TODO: STARTS WIFI INTENT RECEIVER SERVICE */
                 }
             }
             else if (Build.VERSION.SDK_INT < 23) {
@@ -201,5 +227,35 @@ public class NavigateFragment extends Fragment {
 
     private void toast(String s) {
         Toast.makeText(getActivity(), s, Toast.LENGTH_LONG).show();
+    }
+
+    private void populateFloorSpinner() {
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this.mContext, R.array.floors_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        changeFloorSpinner.setAdapter(adapter);
+
+        changeFloorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String floorName = parent.getAdapter().getItem(position).toString();
+                Log.d(TAG, floorName + " selected");
+                updateFloorImage(floorName);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void updateFloorImage(String floorName) {
+        Resources res = getResources();
+        int resID = res.getIdentifier(floorName, "drawable", this.mContext.getPackageName());
+        this.floorImageView.setImageResource(resID);
     }
 }
