@@ -16,6 +16,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,11 +27,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.find.wifitool.database.Event;
+import com.find.wifitool.database.FloorLocation;
+import com.find.wifitool.database.InternalDataBase;
 import com.find.wifitool.internal.Constants;
 import com.find.wifitool.internal.Utils;
 import com.find.wifitool.wifi.WifiIntentReceiver;
-
-import java.util.HashMap;
+import com.find.wifitool.wifi.WifiObject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -57,14 +60,15 @@ public class NavigateFragment extends Fragment {
     private String strUsername;
     private String strServer;
     private String strGroup;
-    private String strLocation = null;  // We don't need any location value fr Tracking
+    private String currLocation = null;
     private int trackVal;
 
     private TextView currLocView;
 
     private Spinner changeFloorSpinner;
     private ImageView floorImageView;
-    private Button setPointButton;
+    private ImageView geomarkerImageView;
+    private Button showExhibitButton;
 
     Handler handler = new Handler();
 
@@ -134,10 +138,35 @@ public class NavigateFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_navigate, container, false);
         currLocView = (TextView)rootView.findViewById(R.id.labelLocationName);
         floorImageView = (ImageView)rootView.findViewById(R.id.floorImageView);
+        geomarkerImageView = (ImageView)rootView.findViewById(R.id.geomarkerImageView);
         changeFloorSpinner = (Spinner)rootView.findViewById(R.id.changeFloorSpinner);
+        showExhibitButton = (Button)rootView.findViewById(R.id.showExhibitButton);
         this.populateFloorSpinner();
-        setPointButton = (Button)rootView.findViewById(R.id.setPointButton);
 
+        floorImageView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(currLocation != null) {
+                    Log.d(TAG, "Touch coordinates : " + String.valueOf(event.getX()) + "x" + String.valueOf(event.getY()));
+
+                    FloorLocation floorLoc = new FloorLocation();
+                    floorLoc.setLocName(currLocation);
+                    floorLoc.setFloorName(changeFloorSpinner.getItemAtPosition(changeFloorSpinner.getSelectedItemPosition()).toString());
+
+                    double floorImageWidth = floorImageView.getWidth();
+                    double floorImageHeight = floorImageView.getHeight();
+                    floorLoc.setLocX(event.getX() / floorImageWidth);
+                    floorLoc.setLocY(event.getY() / floorImageHeight);
+                    floorLoc.setLocRatio(floorImageWidth / floorImageHeight);
+
+                    InternalDataBase internalDataBase = new InternalDataBase(getActivity());
+                    internalDataBase.addLocation(floorLoc);
+
+                    moveGeoMarker(floorLoc);
+                }
+                return true;
+            }
+        });
 
         handler.post(runnableCode);
 
@@ -149,21 +178,33 @@ public class NavigateFragment extends Fragment {
         return rootView;
     }
 
+    private void moveGeoMarker(FloorLocation floorLoc) {
+        double floorImageWidth = floorImageView.getWidth();
+        double floorImageHeight = floorImageView.getHeight();
+
+        this.geomarkerImageView.setTranslationX((float)(floorLoc.getLocX() * floorImageWidth));
+        this.geomarkerImageView.setTranslationY((float)(floorLoc.getLocY() * floorImageHeight));
+    }
+
     // Getting the CurrentLocation from the received braodcast
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String currLocation = intent.getStringExtra("location");
+            currLocation = intent.getStringExtra("location");
             currLocView.setTextColor(getResources().getColor(R.color.currentLocationColor));
             currLocView.setText(currLocation);
 
-            enableSetPointButton();
+            InternalDataBase internalDataBase = new InternalDataBase(getActivity());
+            FloorLocation savedLoc = internalDataBase.getLocation(currLocation);
+            if(savedLoc != null) {
+                updateFloorImage(savedLoc.getFloorName());
+                moveGeoMarker(savedLoc);
+
+                enableShowExhibitButton();
+            }
+
         }
     };
-
-    private void enableSetPointButton() {
-        this.setPointButton.setVisibility(View.VISIBLE);
-    }
 
     // Timers to keep track of our Tracking period
     private Runnable runnableCode = new Runnable() {
@@ -223,6 +264,10 @@ public class NavigateFragment extends Fragment {
         toast(message);
     }
 
+    private void enableShowExhibitButton() {
+        this.showExhibitButton.setVisibility(View.VISIBLE);
+    }
+
     private void toast(String s) {
         Toast.makeText(getActivity(), s, Toast.LENGTH_LONG).show();
     }
@@ -252,6 +297,9 @@ public class NavigateFragment extends Fragment {
     }
 
     private void updateFloorImage(String floorName) {
+        int floorNameSpinnerPosition = ((ArrayAdapter<CharSequence>) changeFloorSpinner.getAdapter()).getPosition(floorName);
+        changeFloorSpinner.setSelection(floorNameSpinnerPosition);
+
         Resources res = getResources();
         int resID = res.getIdentifier(floorName, "drawable", this.mContext.getPackageName());
         this.floorImageView.setImageResource(resID);

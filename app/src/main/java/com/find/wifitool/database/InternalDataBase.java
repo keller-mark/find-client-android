@@ -5,9 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by akshay on 30/12/16.
@@ -22,15 +25,18 @@ public class InternalDataBase extends SQLiteOpenHelper {
     private static final String COLUMN_NAME = "WIFINAME";
     private static final String COLUMN_GROUP = "WIFIGROUP";
     private static final String COLUMN_USER = "WIFIUSER";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
 
     private static final String LT_TABLE_NAME = "locations";
     private static final String LT_COLUMN_ID = "ID";
     private static final String LT_COLUMN_LOC_NAME = "loc_name";
-    private static final String LT_COLUMN_FLOOR_INDEX = "floor_index";
+    private static final String LT_COLUMN_FLOOR_NAME = "floor_name";
     private static final String LT_COLUMN_X = "loc_x";
     private static final String LT_COLUMN_Y = "loc_y";
     private static final String LT_COLUMN_RATIO = "loc_ratio";
+    private static final String LT_COLUMN_EXHIBIT = "loc_exhibit";
+
+
 
     public InternalDataBase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -39,28 +45,31 @@ public class InternalDataBase extends SQLiteOpenHelper {
     // Create DB
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String sql = "CREATE TABLE " + TABLE_NAME
+        String sql = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME
                 + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_NAME + " VARCHAR, "
                 + COLUMN_GROUP + " VARCHAR, "
                 + COLUMN_USER + " VARCHAR);"
 
-                + "CREATE TABLE " + LT_TABLE_NAME
+                + "CREATE TABLE IF NOT EXISTS " + LT_TABLE_NAME
                 + "(" + LT_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + LT_COLUMN_LOC_NAME + " VARCHAR, "
-                + LT_COLUMN_FLOOR_INDEX + " INTEGER, "
+                + LT_COLUMN_FLOOR_NAME + " VARCHAR, "
                 + LT_COLUMN_X + " REAL, "
                 + LT_COLUMN_Y + " REAL, "
-                + LT_COLUMN_RATIO + " REAL);";
+                + LT_COLUMN_RATIO + " REAL, "
+                + LT_COLUMN_EXHIBIT + " INTEGER);";
+
+
 
         db.execSQL(sql);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String sql = "DROP TABLE IF EXISTS" + TABLE_NAME + ";"
-                + "DROP TABLE IF EXISTS" + LT_TABLE_NAME;
+        String sql = "DROP TABLE IF EXISTS " + TABLE_NAME + "; DROP TABLE IF EXISTS " + LT_TABLE_NAME;
         db.execSQL(sql);
+
         onCreate(db);
     }
 
@@ -104,14 +113,20 @@ public class InternalDataBase extends SQLiteOpenHelper {
     public void addLocation(FloorLocation loc) {
         SQLiteDatabase db = this.getWritableDatabase();
 
+        FloorLocation savedLoc = getLocation(loc.getLocName());
+
         ContentValues values = new ContentValues();
         values.put(LT_COLUMN_LOC_NAME, loc.getLocName());
-        values.put(LT_COLUMN_FLOOR_INDEX, loc.getFloorIndex());
+        values.put(LT_COLUMN_FLOOR_NAME, loc.getFloorName());
         values.put(LT_COLUMN_X, loc.getLocX());
         values.put(LT_COLUMN_Y, loc.getLocY());
         values.put(LT_COLUMN_RATIO, loc.getLocRatio());
 
-        db.insert(LT_TABLE_NAME, null, values);
+        if(savedLoc == null) {
+            db.insert(LT_TABLE_NAME, null, values);
+        } else {
+            db.update(LT_TABLE_NAME, values, LT_COLUMN_ID + "=?", new String[] {"" + savedLoc.getID()} );
+        }
         db.close();
     }
 
@@ -128,15 +143,16 @@ public class InternalDataBase extends SQLiteOpenHelper {
                 FloorLocation loc = new FloorLocation();
                 loc.setID(Integer.parseInt(cursor.getString(cursor.getColumnIndex(LT_COLUMN_ID))));
                 loc.setLocName(cursor.getString(cursor.getColumnIndex(LT_COLUMN_LOC_NAME)));
-                loc.setFloorIndex(Integer.parseInt(cursor.getString(cursor.getColumnIndex(LT_COLUMN_FLOOR_INDEX))));
+                loc.setFloorName(cursor.getString(cursor.getColumnIndex(LT_COLUMN_FLOOR_NAME)));
                 loc.setLocX(Double.parseDouble(cursor.getString(cursor.getColumnIndex(LT_COLUMN_X))));
                 loc.setLocY(Double.parseDouble(cursor.getString(cursor.getColumnIndex(LT_COLUMN_Y))));
                 loc.setLocRatio(Double.parseDouble(cursor.getString(cursor.getColumnIndex(LT_COLUMN_RATIO))));
 
                 return loc;
             }
-        } finally {
             cursor.close();
+        } catch(Exception e){
+            Log.d(TAG, "Query failed");
         }
         return null;
     }
