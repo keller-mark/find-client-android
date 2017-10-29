@@ -52,8 +52,8 @@ public class Constants {
     public static final String FIND_ISSUES_URL = "https://github.com/schollz/find/issues";
 
     // Hard-coded exhibit details (for the sake of time this semester)
-    public static final MuseumExhibit exhibit1 = new MuseumExhibit(R.string.exhibit1_title, R.string.exhibit1_subtitle, R.string.exhibit1_title, R.drawable.exhibit1_image);
-    public static final MuseumExhibit exhibit2 = new MuseumExhibit(R.string.exhibit2_title, R.string.exhibit2_subtitle, R.string.exhibit2_title, R.drawable.exhibit2_image);
+    public static final MuseumExhibit exhibit1 = new MuseumExhibit(R.string.exhibit1_title, R.string.exhibit1_subtitle, R.string.exhibit1_description, R.drawable.exhibit1_image);
+    public static final MuseumExhibit exhibit2 = new MuseumExhibit(R.string.exhibit2_title, R.string.exhibit2_subtitle, R.string.exhibit2_description, R.drawable.exhibit2_image);
 
     public static final Map<Integer, MuseumExhibit> exhibitMap;
     static

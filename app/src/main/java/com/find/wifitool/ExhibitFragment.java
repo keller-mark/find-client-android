@@ -81,13 +81,12 @@ public class ExhibitFragment extends Fragment {
         imageView = (ImageView)rootView.findViewById(R.id.imageView);
         descriptionTextView = (TextView)rootView.findViewById(R.id.descriptionTextView);
 
-
-        MuseumExhibit exhibit = Constants.exhibitMap.get(this.getArguments().getInt(ARG_EXHIBIT_ID));
+        MuseumExhibit exhibit = Constants.exhibitMap.get(getArguments().getInt(ARG_EXHIBIT_ID));
         this.updateExhibit(exhibit);
 
 
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_exhibit, container, false);
+        return rootView;
     }
 
     public void updateExhibit(MuseumExhibit exhibit) {
