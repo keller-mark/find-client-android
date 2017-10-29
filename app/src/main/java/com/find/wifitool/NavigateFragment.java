@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -22,18 +24,17 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.find.wifitool.database.Event;
 import com.find.wifitool.database.FloorLocation;
 import com.find.wifitool.database.InternalDataBase;
 import com.find.wifitool.internal.Constants;
 import com.find.wifitool.internal.Utils;
 import com.find.wifitool.wifi.WifiIntentReceiver;
-import com.find.wifitool.wifi.WifiObject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -60,15 +61,19 @@ public class NavigateFragment extends Fragment {
     private String strUsername;
     private String strServer;
     private String strGroup;
-    private String currLocation = null;
+    private FloorLocation currLocation = null;
     private int trackVal;
 
-    private TextView currLocView;
+    private boolean spinnerLoaded = false;
 
+    private boolean follow = true;
+
+    private TextView currLocView;
     private Spinner changeFloorSpinner;
     private ImageView floorImageView;
     private ImageView geomarkerImageView;
     private Button showExhibitButton;
+    private ImageButton crosshairButton;
 
     Handler handler = new Handler();
 
@@ -141,7 +146,15 @@ public class NavigateFragment extends Fragment {
         geomarkerImageView = (ImageView)rootView.findViewById(R.id.geomarkerImageView);
         changeFloorSpinner = (Spinner)rootView.findViewById(R.id.changeFloorSpinner);
         showExhibitButton = (Button)rootView.findViewById(R.id.showExhibitButton);
+        crosshairButton = (ImageButton)rootView.findViewById(R.id.crosshairButton);
         this.populateFloorSpinner();
+
+        crosshairButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enableFollow();
+            }
+        });
 
         floorImageView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -149,20 +162,19 @@ public class NavigateFragment extends Fragment {
                 if(currLocation != null) {
                     Log.d(TAG, "Touch coordinates : " + String.valueOf(event.getX()) + "x" + String.valueOf(event.getY()));
 
-                    FloorLocation floorLoc = new FloorLocation();
-                    floorLoc.setLocName(currLocation);
-                    floorLoc.setFloorName(changeFloorSpinner.getItemAtPosition(changeFloorSpinner.getSelectedItemPosition()).toString());
+                    currLocation.setFloorName(changeFloorSpinner.getItemAtPosition(changeFloorSpinner.getSelectedItemPosition()).toString());
 
                     double floorImageWidth = floorImageView.getWidth();
                     double floorImageHeight = floorImageView.getHeight();
-                    floorLoc.setLocX(event.getX() / floorImageWidth);
-                    floorLoc.setLocY(event.getY() / floorImageHeight);
-                    floorLoc.setLocRatio(floorImageWidth / floorImageHeight);
+
+                    currLocation.setLocX(event.getX() / floorImageWidth);
+                    currLocation.setLocY(event.getY() / floorImageHeight);
+                    currLocation.setLocRatio(floorImageWidth / floorImageHeight);
 
                     InternalDataBase internalDataBase = new InternalDataBase(getActivity());
-                    internalDataBase.addLocation(floorLoc);
+                    internalDataBase.addLocation(currLocation);
 
-                    moveGeoMarker(floorLoc);
+                    moveGeoMarker(currLocation);
                 }
                 return true;
             }
@@ -174,33 +186,61 @@ public class NavigateFragment extends Fragment {
         LocalBroadcastManager.getInstance(mContext).registerReceiver(mMessageReceiver,
                 new IntentFilter(Constants.TRACK_BCAST));
 
+        boolean shouldCreateChild = true;
+        if (shouldCreateChild) {
+            FragmentManager fm = getFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+
+            fm.beginTransaction();
+            Fragment fragTwo = new ExhibitFragment();
+            Bundle arguments = new Bundle();
+            arguments.putBoolean("shouldYouCreateAChildFragment", false);
+            fragTwo.setArguments(arguments);
+            ft.add(R.id.frag_container, fragTwo);
+            ft.commit();
+
+        }
+
         // Inflate the layout for this fragment
         return rootView;
     }
 
     private void moveGeoMarker(FloorLocation floorLoc) {
-        double floorImageWidth = floorImageView.getWidth();
-        double floorImageHeight = floorImageView.getHeight();
+        if(floorLoc != null) {
+            this.geomarkerImageView.setVisibility(View.VISIBLE);
+            double floorImageWidth = floorImageView.getWidth();
+            double floorImageHeight = floorImageView.getHeight();
 
-        this.geomarkerImageView.setTranslationX((float)(floorLoc.getLocX() * floorImageWidth));
-        this.geomarkerImageView.setTranslationY((float)(floorLoc.getLocY() * floorImageHeight));
+            double geomarkerImageWidth = geomarkerImageView.getWidth();
+            double geomarkerImageHeight = geomarkerImageView.getHeight();
+
+            this.geomarkerImageView.setTranslationX((float) (floorLoc.getLocX() * floorImageWidth - (geomarkerImageWidth / 2.0)));
+            this.geomarkerImageView.setTranslationY((float) (floorLoc.getLocY() * floorImageHeight - geomarkerImageHeight));
+        }
     }
 
     // Getting the CurrentLocation from the received braodcast
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            currLocation = intent.getStringExtra("location");
+            String currLocationName = intent.getStringExtra("location");
             currLocView.setTextColor(getResources().getColor(R.color.currentLocationColor));
-            currLocView.setText(currLocation);
+            currLocView.setText(currLocationName);
 
             InternalDataBase internalDataBase = new InternalDataBase(getActivity());
-            FloorLocation savedLoc = internalDataBase.getLocation(currLocation);
+            FloorLocation savedLoc = internalDataBase.getLocation(currLocationName);
             if(savedLoc != null) {
-                updateFloorImage(savedLoc.getFloorName());
-                moveGeoMarker(savedLoc);
+                currLocation = savedLoc;
 
-                enableShowExhibitButton();
+                if(follow) {
+                    updateFloorImage(savedLoc.getFloorName());
+                    moveGeoMarker(savedLoc);
+
+                    enableShowExhibitButton();
+                }
+            } else {
+                currLocation = new FloorLocation();
+                currLocation.setLocName(currLocationName);
             }
 
         }
@@ -280,6 +320,7 @@ public class NavigateFragment extends Fragment {
         // Apply the adapter to the spinner
         changeFloorSpinner.setAdapter(adapter);
 
+
         changeFloorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -287,6 +328,13 @@ public class NavigateFragment extends Fragment {
                 Log.d(TAG, floorName + " selected");
                 updateFloorImage(floorName);
 
+                if(spinnerLoaded) {
+                    if(currLocation != null && !floorName.equals(currLocation.getFloorName())) {
+                        disableFollow();
+                    }
+                } else {
+                    spinnerLoaded = true;
+                }
             }
 
             @Override
@@ -303,5 +351,32 @@ public class NavigateFragment extends Fragment {
         Resources res = getResources();
         int resID = res.getIdentifier(floorName, "drawable", this.mContext.getPackageName());
         this.floorImageView.setImageResource(resID);
+
+        if(currLocation != null && floorName.equals(currLocation.getFloorName())) {
+            moveGeoMarker(currLocation);
+        }
+
+    }
+
+    private void enableFollow() {
+        this.setFollow(true);
+    }
+
+    private void disableFollow() {
+        this.setFollow(false);
+    }
+
+
+    private void setFollow(boolean follow) {
+        this.follow = follow;
+        this.crosshairButton.setVisibility((follow ? View.GONE : View.VISIBLE));
+        if(follow) {
+            if(currLocation != null) {
+                this.updateFloorImage(currLocation.getFloorName());
+            }
+            this.moveGeoMarker(currLocation);
+        } else {
+            this.geomarkerImageView.setVisibility(View.GONE);
+        }
     }
 }

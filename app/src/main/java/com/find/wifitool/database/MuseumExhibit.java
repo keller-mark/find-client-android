@@ -5,5 +5,5 @@ package com.find.wifitool.database;
  */
 
 public class MuseumExhibit {
-    
+
 }

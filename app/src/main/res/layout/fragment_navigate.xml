@@ -12,55 +12,107 @@
     android:keepScreenOn="true"
     tools:context="com.findTools.Find.NavigateFragment">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/floorImageView"
+                    android:src="@drawable/building"
+                    android:layout_width="match_parent"
+                    android:layout_height="280dp" />
+
+                <ImageView
+                    android:id="@+id/geomarkerImageView"
+                    android:visibility="gone"
+                    android:src="@drawable/geo_marker"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/labelLocationName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Determining"
+                android:layout_marginTop="10dp"
+                android:textSize="32sp"
+                android:textColor="#757575"
+                android:textStyle="normal|bold"
+                android:layout_gravity="center_horizontal"/>
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Spinner
+                    android:id="@+id/changeFloorSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    />
+
+                <ImageButton
+                    android:id="@+id/crosshairButton"
+                    android:visibility="gone"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icon_crosshair"/>
+
+            </LinearLayout>
+
+
+            <Button
+                android:id="@+id/showExhibitButton"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Show Exhibit"/>
+
+        </LinearLayout>
+
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/floorImageView"
-                android:src="@drawable/building"
+            <LinearLayout
+            android:orientation="vertical"
+                android:id="@+id/frag_container"
                 android:layout_width="match_parent"
-                android:layout_height="280dp"
- />
+                android:layout_height="match_parent"
+                android:background="@drawable/border"
+                android:layout_margin="10dp"/>
 
-            <ImageView
-                android:id="@+id/geomarkerImageView"
-                android:src="@drawable/geo_marker"
-                android:layout_width="30dp"
-                android:layout_height="30dp" />
+            <ImageButton
+                android:id="@+id/closeExhibitButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="right"
+                android:src="@drawable/icon_x"
+                android:scaleType="fitCenter"
+                >
+
+            </ImageButton>
+
 
         </FrameLayout>
 
-        <TextView
-            android:id="@+id/labelLocationName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Determining"
-            android:layout_marginTop="10dp"
-            android:textSize="32sp"
-            android:textColor="#757575"
-            android:textStyle="normal|bold"
-            android:layout_gravity="center_horizontal"/>
-
-
-
-        <Spinner
-            android:id="@+id/changeFloorSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <Button
-            android:id="@+id/showExhibitButton"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Show Exhibit"/>
-
-    </LinearLayout>
+    </FrameLayout>
 
 </RelativeLayout>
