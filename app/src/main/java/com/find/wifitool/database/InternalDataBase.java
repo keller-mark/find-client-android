@@ -25,7 +25,7 @@ public class InternalDataBase extends SQLiteOpenHelper {
     private static final String COLUMN_NAME = "WIFINAME";
     private static final String COLUMN_GROUP = "WIFIGROUP";
     private static final String COLUMN_USER = "WIFIUSER";
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 10;
 
     private static final String LT_TABLE_NAME = "locations";
     private static final String LT_COLUMN_ID = "ID";
@@ -61,7 +61,6 @@ public class InternalDataBase extends SQLiteOpenHelper {
                 + LT_COLUMN_Y + " REAL, "
                 + LT_COLUMN_RATIO + " REAL, "
                 + LT_COLUMN_EXHIBIT + " INTEGER);";
-
 
         db.execSQL(sql);
     }
@@ -125,6 +124,7 @@ public class InternalDataBase extends SQLiteOpenHelper {
         values.put(LT_COLUMN_X, loc.getLocX());
         values.put(LT_COLUMN_Y, loc.getLocY());
         values.put(LT_COLUMN_RATIO, loc.getLocRatio());
+        values.put(LT_COLUMN_EXHIBIT, loc.getLocExhibitID());
 
         if(savedLoc == null) {
             db.insert(LT_TABLE_NAME, null, values);
@@ -151,6 +151,7 @@ public class InternalDataBase extends SQLiteOpenHelper {
                 loc.setLocX(Double.parseDouble(cursor.getString(cursor.getColumnIndex(LT_COLUMN_X))));
                 loc.setLocY(Double.parseDouble(cursor.getString(cursor.getColumnIndex(LT_COLUMN_Y))));
                 loc.setLocRatio(Double.parseDouble(cursor.getString(cursor.getColumnIndex(LT_COLUMN_RATIO))));
+                loc.setLocExhibitID(Integer.parseInt(cursor.getString(cursor.getColumnIndex(LT_COLUMN_EXHIBIT))));
 
                 return loc;
             }

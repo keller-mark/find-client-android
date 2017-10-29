@@ -301,7 +301,7 @@ public class NavigateFragment extends Fragment {
         showExhibitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showExhibitInfo(null);
+                showExhibitInfo(1);
             }
         });
         this.showExhibitButton.setVisibility(View.VISIBLE);
@@ -380,7 +380,7 @@ public class NavigateFragment extends Fragment {
         }
     }
 
-    private void showExhibitInfo(final MuseumExhibit museumExhibit) {
+    private void showExhibitInfo(int exhibitID) {
         exhibitFrameContainer.setVisibility(View.VISIBLE);
 
         FragmentManager fm = getFragmentManager();
@@ -389,11 +389,10 @@ public class NavigateFragment extends Fragment {
         fm.beginTransaction();
         Fragment exhibitFragment = new ExhibitFragment();
         Bundle arguments = new Bundle();
-        arguments.putBoolean("shouldYouCreateAChildFragment", false);
+        arguments.putInt("exhibitID", exhibitID);
         exhibitFragment.setArguments(arguments);
         ft.add(R.id.frag_container, exhibitFragment);
         ft.commit();
-
 
         closeExhibitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -406,4 +405,6 @@ public class NavigateFragment extends Fragment {
             }
         });
     }
+
+
 }

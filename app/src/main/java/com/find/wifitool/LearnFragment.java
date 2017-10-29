@@ -22,8 +22,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.find.wifitool.OnFragmentInteractionListener;
 import com.find.wifitool.database.Event;
+import com.find.wifitool.database.FloorLocation;
 import com.find.wifitool.database.InternalDataBase;
 import com.find.wifitool.internal.Constants;
 import com.find.wifitool.internal.Utils;
@@ -166,6 +166,7 @@ public class LearnFragment extends Fragment {
                         WifiObject wifi = new WifiObject(strLocationName, strGroup , strUsername);
                         insertIntoList(wifi);
                         internalDataBase.addEvent(new Event(strLocationName, strGroup, strUsername));
+                        internalDataBase.addLocation(new FloorLocation(0, strLocationName, null, 0, 0, 1));
                         handler.post(runnableCode);
                     }
                 });

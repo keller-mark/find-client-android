@@ -3,9 +3,17 @@ package com.find.wifitool;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.find.wifitool.database.MuseumExhibit;
+import com.find.wifitool.internal.Constants;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -18,12 +26,17 @@ import android.view.ViewGroup;
 public class ExhibitFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_EXHIBIT_ID = "exhibitID";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private int paramExhibitID;
     private String mParam2;
+
+
+    TextView titleTextView, subtitleTextView, descriptionTextView;
+    ImageView imageView;
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -43,7 +56,7 @@ public class ExhibitFragment extends Fragment {
     public static ExhibitFragment newInstance(String param1, String param2) {
         ExhibitFragment fragment = new ExhibitFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putInt(ARG_EXHIBIT_ID, 1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
@@ -53,7 +66,7 @@ public class ExhibitFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            paramExhibitID = getArguments().getInt(ARG_EXHIBIT_ID);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
@@ -61,8 +74,31 @@ public class ExhibitFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        View rootView = inflater.inflate(R.layout.fragment_exhibit, container, false);
+        titleTextView = (TextView)rootView.findViewById(R.id.titleTextView);
+        subtitleTextView = (TextView)rootView.findViewById(R.id.subtitleTextView);
+        imageView = (ImageView)rootView.findViewById(R.id.imageView);
+        descriptionTextView = (TextView)rootView.findViewById(R.id.descriptionTextView);
+
+
+        MuseumExhibit exhibit = Constants.exhibitMap.get(this.getArguments().getInt(ARG_EXHIBIT_ID));
+        this.updateExhibit(exhibit);
+
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_exhibit, container, false);
+    }
+
+    public void updateExhibit(MuseumExhibit exhibit) {
+        if(exhibit != null) {
+            titleTextView.setText(exhibit.getTitleResourceID());
+            subtitleTextView.setText(exhibit.getSubtitleResourceID());
+            descriptionTextView.setText(exhibit.getDescriptionResourceID());
+            imageView.setImageResource(exhibit.getImageResourceID());
+        } else {
+            Log.d(TAG, "NULL EXHIBIT, CANNOT UPDATE");
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

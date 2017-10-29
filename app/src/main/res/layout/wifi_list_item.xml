@@ -3,22 +3,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/wifiName"
-        android:text="Wifi Name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:textStyle="normal|bold"
-        android:textColor="#212121"
-        android:textSize="22sp" />
+    <LinearLayout
+        android:id="@+id/itemTop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/wifiName"
+            android:text="Wifi Name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:textStyle="normal|bold"
+            android:textColor="#212121"
+            android:textSize="22sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/setExhibitButton"
+            android:text="Set Exhibit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
 
     <TextView
         android:id="@+id/labelGrpName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Group:"
-        android:layout_below="@id/wifiName"
+        android:layout_below="@id/itemTop"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"/>
 
@@ -27,7 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="group"
-        android:layout_below="@id/wifiName"
+        android:layout_below="@id/itemTop"
         android:layout_toEndOf="@id/labelGrpName"
         android:layout_marginStart="10dp"
         android:textColor="#1565C0"
@@ -38,7 +57,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="User:"
-        android:layout_below="@id/wifiName"
+        android:layout_below="@id/itemTop"
         android:layout_toEndOf="@id/fieldGrpName"
         android:layout_marginStart="30dp"
         android:layout_marginTop="10dp"/>
@@ -48,7 +67,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="user"
-        android:layout_below="@id/wifiName"
+        android:layout_below="@id/itemTop"
         android:layout_toEndOf="@id/labelUsrName"
         android:layout_marginStart="10dp"
         android:textColor="#1565C0"

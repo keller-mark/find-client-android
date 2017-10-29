@@ -13,6 +13,8 @@ public class FloorLocation {
     private double _locY;
     private double _locRatio;
 
+    private int _locExhibitID;
+
     // Empty constructor
     public FloorLocation(){
 
@@ -74,4 +76,13 @@ public class FloorLocation {
     public void setLocRatio(double _locRatio) {
         this._locRatio = _locRatio;
     }
+
+    public int getLocExhibitID() {
+        return _locExhibitID;
+    }
+
+    public void setLocExhibitID(int _locExhibitID) {
+        this._locExhibitID = _locExhibitID;
+    }
+
 }
