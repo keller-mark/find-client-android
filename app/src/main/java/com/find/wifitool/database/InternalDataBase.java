@@ -25,7 +25,7 @@ public class InternalDataBase extends SQLiteOpenHelper {
     private static final String COLUMN_NAME = "WIFINAME";
     private static final String COLUMN_GROUP = "WIFIGROUP";
     private static final String COLUMN_USER = "WIFIUSER";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 9;
 
     private static final String LT_TABLE_NAME = "locations";
     private static final String LT_COLUMN_ID = "ID";
@@ -49,9 +49,11 @@ public class InternalDataBase extends SQLiteOpenHelper {
                 + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_NAME + " VARCHAR, "
                 + COLUMN_GROUP + " VARCHAR, "
-                + COLUMN_USER + " VARCHAR);"
+                + COLUMN_USER + " VARCHAR); ";
 
-                + "CREATE TABLE IF NOT EXISTS " + LT_TABLE_NAME
+        db.execSQL(sql);
+
+        sql = "CREATE TABLE IF NOT EXISTS " + LT_TABLE_NAME
                 + "(" + LT_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + LT_COLUMN_LOC_NAME + " VARCHAR, "
                 + LT_COLUMN_FLOOR_NAME + " VARCHAR, "
@@ -61,13 +63,15 @@ public class InternalDataBase extends SQLiteOpenHelper {
                 + LT_COLUMN_EXHIBIT + " INTEGER);";
 
 
-
         db.execSQL(sql);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String sql = "DROP TABLE IF EXISTS " + TABLE_NAME + "; DROP TABLE IF EXISTS " + LT_TABLE_NAME;
+        String sql = "DROP TABLE IF EXISTS " + TABLE_NAME;
+        db.execSQL(sql);
+
+        sql = "DROP TABLE IF EXISTS " + LT_TABLE_NAME;
         db.execSQL(sql);
 
         onCreate(db);

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -32,6 +34,7 @@ import android.widget.Toast;
 
 import com.find.wifitool.database.FloorLocation;
 import com.find.wifitool.database.InternalDataBase;
+import com.find.wifitool.database.MuseumExhibit;
 import com.find.wifitool.internal.Constants;
 import com.find.wifitool.internal.Utils;
 import com.find.wifitool.wifi.WifiIntentReceiver;
@@ -47,7 +50,6 @@ import com.find.wifitool.wifi.WifiIntentReceiver;
 public class NavigateFragment extends Fragment {
     private static final String TAG = NavigateFragment.class.getSimpleName();
 
-    //   TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -73,7 +75,8 @@ public class NavigateFragment extends Fragment {
     private ImageView floorImageView;
     private ImageView geomarkerImageView;
     private Button showExhibitButton;
-    private ImageButton crosshairButton;
+    private ImageButton crosshairButton, closeExhibitButton;
+    private FrameLayout exhibitFrameContainer;
 
     Handler handler = new Handler();
 
@@ -96,8 +99,7 @@ public class NavigateFragment extends Fragment {
     }
 
     // Required empty public constructor
-    public NavigateFragment() {
-    }
+    public NavigateFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -147,6 +149,9 @@ public class NavigateFragment extends Fragment {
         changeFloorSpinner = (Spinner)rootView.findViewById(R.id.changeFloorSpinner);
         showExhibitButton = (Button)rootView.findViewById(R.id.showExhibitButton);
         crosshairButton = (ImageButton)rootView.findViewById(R.id.crosshairButton);
+        closeExhibitButton = (ImageButton)rootView.findViewById(R.id.closeExhibitButton);
+        exhibitFrameContainer = (FrameLayout)rootView.findViewById(R.id.exhibitFrameContainer);
+
         this.populateFloorSpinner();
 
         crosshairButton.setOnClickListener(new View.OnClickListener() {
@@ -182,24 +187,12 @@ public class NavigateFragment extends Fragment {
 
         handler.post(runnableCode);
 
+        //WifiManager mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+        //mWifiManager.startScan();
+
         // Listener to the broadcast message from WifiIntent
         LocalBroadcastManager.getInstance(mContext).registerReceiver(mMessageReceiver,
                 new IntentFilter(Constants.TRACK_BCAST));
-
-        boolean shouldCreateChild = true;
-        if (shouldCreateChild) {
-            FragmentManager fm = getFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-
-            fm.beginTransaction();
-            Fragment fragTwo = new ExhibitFragment();
-            Bundle arguments = new Bundle();
-            arguments.putBoolean("shouldYouCreateAChildFragment", false);
-            fragTwo.setArguments(arguments);
-            ft.add(R.id.frag_container, fragTwo);
-            ft.commit();
-
-        }
 
         // Inflate the layout for this fragment
         return rootView;
@@ -305,6 +298,12 @@ public class NavigateFragment extends Fragment {
     }
 
     private void enableShowExhibitButton() {
+        showExhibitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showExhibitInfo(null);
+            }
+        });
         this.showExhibitButton.setVisibility(View.VISIBLE);
     }
 
@@ -345,17 +344,18 @@ public class NavigateFragment extends Fragment {
     }
 
     private void updateFloorImage(String floorName) {
-        int floorNameSpinnerPosition = ((ArrayAdapter<CharSequence>) changeFloorSpinner.getAdapter()).getPosition(floorName);
-        changeFloorSpinner.setSelection(floorNameSpinnerPosition);
+        if(floorName != null) {
+            int floorNameSpinnerPosition = ((ArrayAdapter<CharSequence>) changeFloorSpinner.getAdapter()).getPosition(floorName);
+            changeFloorSpinner.setSelection(floorNameSpinnerPosition);
 
-        Resources res = getResources();
-        int resID = res.getIdentifier(floorName, "drawable", this.mContext.getPackageName());
-        this.floorImageView.setImageResource(resID);
+            Resources res = getResources();
+            int resID = res.getIdentifier(floorName, "drawable", this.mContext.getPackageName());
+            this.floorImageView.setImageResource(resID);
 
-        if(currLocation != null && floorName.equals(currLocation.getFloorName())) {
-            moveGeoMarker(currLocation);
+            if (currLocation != null && floorName.equals(currLocation.getFloorName())) {
+                moveGeoMarker(currLocation);
+            }
         }
-
     }
 
     private void enableFollow() {
@@ -378,5 +378,32 @@ public class NavigateFragment extends Fragment {
         } else {
             this.geomarkerImageView.setVisibility(View.GONE);
         }
+    }
+
+    private void showExhibitInfo(final MuseumExhibit museumExhibit) {
+        exhibitFrameContainer.setVisibility(View.VISIBLE);
+
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+
+        fm.beginTransaction();
+        Fragment exhibitFragment = new ExhibitFragment();
+        Bundle arguments = new Bundle();
+        arguments.putBoolean("shouldYouCreateAChildFragment", false);
+        exhibitFragment.setArguments(arguments);
+        ft.add(R.id.frag_container, exhibitFragment);
+        ft.commit();
+
+
+        closeExhibitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getFragmentManager();
+                fm.beginTransaction().remove(fm.findFragmentById(R.id.frag_container)).commit();
+                exhibitFrameContainer.setVisibility(View.GONE);
+
+                //fragTwo.updateExhibit(museumExhibit);
+            }
+        });
     }
 }

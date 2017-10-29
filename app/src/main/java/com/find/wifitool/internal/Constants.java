@@ -24,7 +24,7 @@ public class Constants {
 
     //Default values
     public static final String DEFAULT_USERNAME = "user"; // not used
-    public static final  String DEFAULT_GROUP =  "pvc2017_avw";
+    public static final  String DEFAULT_GROUP =  "pvc2017_avw4";
     public static final String DEFAULT_SERVER = "https://ml.internalpositioning.com/";
     public static final String DEFAULT_LOCATION_NAME = "location";
     public static final int DEFAULT_TRACKING_INTERVAL = 5;
