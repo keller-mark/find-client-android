@@ -166,7 +166,7 @@ public class LearnFragment extends Fragment {
                         WifiObject wifi = new WifiObject(strLocationName, strGroup , strUsername);
                         insertIntoList(wifi);
                         internalDataBase.addEvent(new Event(strLocationName, strGroup, strUsername));
-                        internalDataBase.addLocation(new FloorLocation(0, strLocationName, null, 0, 0, 1));
+                        internalDataBase.addLocation(new FloorLocation(0, strLocationName, strLocationName, null, 0, 0, 1));
                         handler.post(runnableCode);
                     }
                 });

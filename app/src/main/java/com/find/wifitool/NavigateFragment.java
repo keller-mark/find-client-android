@@ -218,11 +218,11 @@ public class NavigateFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             String currLocationName = intent.getStringExtra("location");
             currLocView.setTextColor(getResources().getColor(R.color.currentLocationColor));
-            currLocView.setText(currLocationName);
 
             InternalDataBase internalDataBase = new InternalDataBase(getActivity());
             FloorLocation savedLoc = internalDataBase.getLocation(currLocationName);
             if(savedLoc != null) {
+                currLocView.setText(savedLoc.getLocNamePretty());
                 currLocation = savedLoc;
 
                 if(follow) {
@@ -232,6 +232,7 @@ public class NavigateFragment extends Fragment {
                     enableShowExhibitButton();
                 }
             } else {
+                currLocView.setText(currLocationName);
                 currLocation = new FloorLocation();
                 currLocation.setLocName(currLocationName);
             }
@@ -301,7 +302,9 @@ public class NavigateFragment extends Fragment {
         showExhibitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showExhibitInfo(1);
+                if(currLocation != null && currLocation.getLocExhibitID() > 0) {
+                    showExhibitInfo(currLocation.getLocExhibitID());
+                }
             }
         });
         this.showExhibitButton.setVisibility(View.VISIBLE);

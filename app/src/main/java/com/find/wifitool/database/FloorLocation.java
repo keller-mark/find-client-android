@@ -8,6 +8,7 @@ public class FloorLocation {
 
     private int _id;
     private String _locName;
+    private String _locNamePretty;
     private String _floorName;
     private double _locX;
     private double _locY;
@@ -20,9 +21,10 @@ public class FloorLocation {
 
     }
 
-    public FloorLocation(int id, String locName, String floorName, double locX, double locY, double locRatio){
+    public FloorLocation(int id, String locName, String locNamePretty, String floorName, double locX, double locY, double locRatio){
         this._id = id;
         this._locName = locName;
+        this._locNamePretty = locNamePretty;
         this._floorName = floorName;
         this._locX = locX;
         this._locY = locY;
@@ -43,6 +45,14 @@ public class FloorLocation {
 
     public void setLocName(String _locName) {
         this._locName = _locName;
+    }
+
+    public String getLocNamePretty() {
+        return _locNamePretty;
+    }
+
+    public void setLocNamePretty(String _locNamePretty) {
+        this._locNamePretty = _locNamePretty;
     }
 
     public String getFloorName() {

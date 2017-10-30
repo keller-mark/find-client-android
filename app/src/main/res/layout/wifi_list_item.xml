@@ -24,6 +24,12 @@
             android:layout_weight="1"/>
 
         <Button
+            android:id="@+id/setPrettyNameButton"
+            android:text="Set Name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
             android:id="@+id/setExhibitButton"
             android:text="Set Exhibit"
             android:layout_width="wrap_content"

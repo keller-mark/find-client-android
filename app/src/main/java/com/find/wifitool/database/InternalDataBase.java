@@ -25,11 +25,12 @@ public class InternalDataBase extends SQLiteOpenHelper {
     private static final String COLUMN_NAME = "WIFINAME";
     private static final String COLUMN_GROUP = "WIFIGROUP";
     private static final String COLUMN_USER = "WIFIUSER";
-    private static final int DATABASE_VERSION = 10;
+    private static final int DATABASE_VERSION = 11;
 
     private static final String LT_TABLE_NAME = "locations";
     private static final String LT_COLUMN_ID = "ID";
     private static final String LT_COLUMN_LOC_NAME = "loc_name";
+    private static final String LT_COLUMN_LOC_NAME_PRETTY = "loc_name_pretty";
     private static final String LT_COLUMN_FLOOR_NAME = "floor_name";
     private static final String LT_COLUMN_X = "loc_x";
     private static final String LT_COLUMN_Y = "loc_y";
@@ -56,6 +57,7 @@ public class InternalDataBase extends SQLiteOpenHelper {
         sql = "CREATE TABLE IF NOT EXISTS " + LT_TABLE_NAME
                 + "(" + LT_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + LT_COLUMN_LOC_NAME + " VARCHAR, "
+                + LT_COLUMN_LOC_NAME_PRETTY + " VARCHAR, "
                 + LT_COLUMN_FLOOR_NAME + " VARCHAR, "
                 + LT_COLUMN_X + " REAL, "
                 + LT_COLUMN_Y + " REAL, "
@@ -120,6 +122,7 @@ public class InternalDataBase extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(LT_COLUMN_LOC_NAME, loc.getLocName());
+        values.put(LT_COLUMN_LOC_NAME_PRETTY, loc.getLocNamePretty());
         values.put(LT_COLUMN_FLOOR_NAME, loc.getFloorName());
         values.put(LT_COLUMN_X, loc.getLocX());
         values.put(LT_COLUMN_Y, loc.getLocY());
@@ -147,6 +150,7 @@ public class InternalDataBase extends SQLiteOpenHelper {
                 FloorLocation loc = new FloorLocation();
                 loc.setID(Integer.parseInt(cursor.getString(cursor.getColumnIndex(LT_COLUMN_ID))));
                 loc.setLocName(cursor.getString(cursor.getColumnIndex(LT_COLUMN_LOC_NAME)));
+                loc.setLocNamePretty(cursor.getString(cursor.getColumnIndex(LT_COLUMN_LOC_NAME_PRETTY)));
                 loc.setFloorName(cursor.getString(cursor.getColumnIndex(LT_COLUMN_FLOOR_NAME)));
                 loc.setLocX(Double.parseDouble(cursor.getString(cursor.getColumnIndex(LT_COLUMN_X))));
                 loc.setLocY(Double.parseDouble(cursor.getString(cursor.getColumnIndex(LT_COLUMN_Y))));
