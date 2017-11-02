@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -69,11 +70,11 @@ public class NavigateFragment extends Fragment {
 
     private boolean follow = true;
 
-    private TextView currLocView;
+    private TextView currLocView, phillipsHeading;
     private Spinner changeFloorSpinner;
     private ImageView floorImageView;
     private ImageView geomarkerImageView;
-    private Button showExhibitButton;
+    private Button showExhibitButton, showWorksButton;
     private ImageButton crosshairButton, closeExhibitButton;
     private FrameLayout exhibitFrameContainer;
 
@@ -85,11 +86,11 @@ public class NavigateFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment SettingsFragment.
+     * @return A new instance of fragment NavigateFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SettingsFragment newInstance(String param1, String param2) {
-        SettingsFragment fragment = new SettingsFragment();
+    public static NavigateFragment newInstance(String param1, String param2) {
+        NavigateFragment fragment = new NavigateFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -138,21 +139,25 @@ public class NavigateFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        // Bind to views
         View rootView = inflater.inflate(R.layout.fragment_navigate, container, false);
         currLocView = (TextView)rootView.findViewById(R.id.labelLocationName);
         floorImageView = (ImageView)rootView.findViewById(R.id.floorImageView);
         geomarkerImageView = (ImageView)rootView.findViewById(R.id.geomarkerImageView);
         changeFloorSpinner = (Spinner)rootView.findViewById(R.id.changeFloorSpinner);
         showExhibitButton = (Button)rootView.findViewById(R.id.showExhibitButton);
+        showWorksButton = (Button)rootView.findViewById(R.id.showWorksButton);
         crosshairButton = (ImageButton)rootView.findViewById(R.id.crosshairButton);
         closeExhibitButton = (ImageButton)rootView.findViewById(R.id.closeExhibitButton);
         exhibitFrameContainer = (FrameLayout)rootView.findViewById(R.id.exhibitFrameContainer);
+        phillipsHeading = (TextView)rootView.findViewById(R.id.phillipsHeading);
+        this.setupPhillipsHeading();
 
         this.populateFloorSpinner();
 
+        // Initialize the "follow" button
         crosshairButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,123 +165,19 @@ public class NavigateFragment extends Fragment {
             }
         });
 
-        floorImageView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(currLocation != null) {
-                    Log.d(TAG, "Touch coordinates : " + String.valueOf(event.getX()) + "x" + String.valueOf(event.getY()));
+        if(Constants.LEARN_MODE) {
+            this.setupLearnFeatures();
+        }
 
-                    currLocation.setFloorName(changeFloorSpinner.getItemAtPosition(changeFloorSpinner.getSelectedItemPosition()).toString());
-
-                    double floorImageWidth = floorImageView.getWidth();
-                    double floorImageHeight = floorImageView.getHeight();
-
-                    currLocation.setLocX(event.getX() / floorImageWidth);
-                    currLocation.setLocY(event.getY() / floorImageHeight);
-                    currLocation.setLocRatio(floorImageWidth / floorImageHeight);
-
-                    InternalDataBase internalDataBase = new InternalDataBase(getActivity());
-                    internalDataBase.addLocation(currLocation);
-
-                    moveGeoMarker(currLocation);
-                }
-                return true;
-            }
-        });
-
+        // Start the WifiIntentReceiver code
         handler.post(runnableCode);
 
-        //WifiManager mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
-        //mWifiManager.startScan();
-
         // Listener to the broadcast message from WifiIntent
-        LocalBroadcastManager.getInstance(mContext).registerReceiver(mMessageReceiver,
-                new IntentFilter(Constants.TRACK_BCAST));
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(mMessageReceiver, new IntentFilter(Constants.TRACK_BCAST));
 
         // Inflate the layout for this fragment
         return rootView;
     }
-
-    private void moveGeoMarker(FloorLocation floorLoc) {
-        if(floorLoc != null) {
-            this.geomarkerImageView.setVisibility(View.VISIBLE);
-            double floorImageWidth = floorImageView.getWidth();
-            double floorImageHeight = floorImageView.getHeight();
-
-            double geomarkerImageWidth = geomarkerImageView.getWidth();
-            double geomarkerImageHeight = geomarkerImageView.getHeight();
-
-            this.geomarkerImageView.setTranslationX((float) (floorLoc.getLocX() * floorImageWidth - (geomarkerImageWidth / 2.0)));
-            this.geomarkerImageView.setTranslationY((float) (floorLoc.getLocY() * floorImageHeight - geomarkerImageHeight));
-        }
-    }
-
-    // Getting the CurrentLocation from the received braodcast
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String currLocationName = intent.getStringExtra("location");
-            currLocView.setTextColor(getResources().getColor(R.color.currentLocationColor));
-
-            InternalDataBase internalDataBase = new InternalDataBase(getActivity());
-            FloorLocation savedLoc = internalDataBase.getLocation(currLocationName);
-
-            if(savedLoc != null) {
-                if(currLocation == null || !currLocation.equals(savedLoc)) {
-                    currLocView.setText(savedLoc.getLocNamePretty());
-                    currLocation = savedLoc;
-
-                    if (follow) {
-                        updateFloorImage(savedLoc.getFloorName());
-                        moveGeoMarker(savedLoc);
-
-                        enableShowExhibitButton();
-                    }
-
-                    // Vibrate for 500 milliseconds to alert about new location
-                    Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-                    v.vibrate(500);
-                }
-            } else {
-                currLocView.setText(currLocationName);
-                currLocation = new FloorLocation();
-                currLocation.setLocName(currLocationName);
-            }
-
-        }
-    };
-
-    // Timers to keep track of our Tracking period
-    private Runnable runnableCode = new Runnable() {
-        @Override
-        public void run() {
-            if (Build.VERSION.SDK_INT >= 23 ) {
-                if(Utils.isWiFiAvailable(mContext) && Utils.hasAnyLocationPermission(mContext)) {
-                    Intent intent = new Intent(mContext, WifiIntentReceiver.class);
-                    intent.putExtra("event", Constants.TRACK_TAG);
-                    intent.putExtra("groupName", strGroup);
-                    intent.putExtra("userName", strUsername);
-                    intent.putExtra("serverName", strServer);
-                    intent.putExtra("locationName", sharedPreferences.getString(Constants.LOCATION_NAME, ""));
-                    mContext.startService(intent); /* TODO: STARTS WIFI INTENT RECEIVER SERVICE */
-                }
-            }
-            else if (Build.VERSION.SDK_INT < 23) {
-                if(Utils.isWiFiAvailable(mContext)) {
-                    Intent intent = new Intent(mContext, WifiIntentReceiver.class);
-                    intent.putExtra("groupName", strGroup);
-                    intent.putExtra("userName", strUsername);
-                    intent.putExtra("serverName", strServer);
-                    intent.putExtra("locationName", sharedPreferences.getString(Constants.LOCATION_NAME, ""));
-                    mContext.startService(intent);
-                }
-            }
-            else {
-                return;
-            }
-            handler.postDelayed(runnableCode, trackVal * 1000);
-        }
-    };
 
     @Override
     public void onAttach(Context context) {
@@ -298,26 +199,122 @@ public class NavigateFragment extends Fragment {
         mListener = null;
     }
 
+    private void toast(String s) {
+        Toast.makeText(getActivity(), s, Toast.LENGTH_LONG).show();
+    }
+
     // Logging message in form of Toasts
     private void logMeToast(String message) {
         Log.d(TAG, message);
         toast(message);
     }
 
-    private void enableShowExhibitButton() {
-        showExhibitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(currLocation != null && currLocation.getLocExhibitID() > 0) {
-                    showExhibitInfo(currLocation.getLocExhibitID());
+    // Timers to keep track of our Tracking period
+    private Runnable runnableCode = new Runnable() {
+        @Override
+        public void run() {
+            if (Build.VERSION.SDK_INT >= 23) {
+                if(Utils.isWiFiAvailable(mContext) && Utils.hasAnyLocationPermission(mContext)) {
+                    Intent intent = new Intent(mContext, WifiIntentReceiver.class);
+                    intent.putExtra("event", Constants.TRACK_TAG);
+                    intent.putExtra("groupName", strGroup);
+                    intent.putExtra("userName", strUsername);
+                    intent.putExtra("serverName", strServer);
+                    intent.putExtra("locationName", sharedPreferences.getString(Constants.LOCATION_NAME, ""));
+                    mContext.startService(intent);
                 }
             }
-        });
-        this.showExhibitButton.setVisibility(View.VISIBLE);
+            else if (Build.VERSION.SDK_INT < 23) {
+                if(Utils.isWiFiAvailable(mContext)) {
+                    Intent intent = new Intent(mContext, WifiIntentReceiver.class);
+                    intent.putExtra("groupName", strGroup);
+                    intent.putExtra("userName", strUsername);
+                    intent.putExtra("serverName", strServer);
+                    intent.putExtra("locationName", sharedPreferences.getString(Constants.LOCATION_NAME, ""));
+                    mContext.startService(intent);
+                }
+            }
+            else {
+                return;
+            }
+            handler.postDelayed(runnableCode, trackVal * 1000);
+        }
+    };
+
+    // Getting the CurrentLocation from the received braodcast
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String currLocationName = intent.getStringExtra("location");
+            currLocView.setTextColor(getResources().getColor(R.color.currentLocationColor));
+
+            InternalDataBase internalDataBase = new InternalDataBase(getActivity());
+            FloorLocation savedLoc = internalDataBase.getLocation(currLocationName);
+
+            if(savedLoc != null) {
+                if(currLocation == null || !currLocation.equals(savedLoc)) {
+                    currLocView.setText(savedLoc.getLocNamePretty());
+                    currLocation = savedLoc;
+
+                    if (follow) {
+                        updateFloorImage(savedLoc.getFloorName());
+                        moveGeoMarker(savedLoc);
+                    }
+
+                    // Vibrate for 500 milliseconds to alert about new location
+                    Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                    v.vibrate(500);
+                }
+            } else {
+                currLocView.setText(currLocationName);
+                currLocation = new FloorLocation();
+                currLocation.setLocName(currLocationName);
+            }
+
+            enableShowExhibitButton();
+
+        }
+    };
+
+    /* Floor plan UI helper functions */
+
+    private void moveGeoMarker(FloorLocation floorLoc) {
+        if(floorLoc != null) {
+            this.geomarkerImageView.setVisibility(View.VISIBLE);
+            double floorImageWidth = floorImageView.getWidth();
+            double floorImageHeight = floorImageView.getHeight();
+
+            double geomarkerImageWidth = geomarkerImageView.getWidth();
+            double geomarkerImageHeight = geomarkerImageView.getHeight();
+
+            this.geomarkerImageView.setTranslationX((float) (floorLoc.getLocX() * floorImageWidth - (geomarkerImageWidth / 2.0)));
+            this.geomarkerImageView.setTranslationY((float) (floorLoc.getLocY() * floorImageHeight - geomarkerImageHeight));
+        }
     }
 
-    private void toast(String s) {
-        Toast.makeText(getActivity(), s, Toast.LENGTH_LONG).show();
+    private void enableShowExhibitButton() {
+        if(currLocation != null && currLocation.getLocExhibitID() > 0) {
+            showExhibitButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showExhibitInfo(currLocation.getLocExhibitID());
+                }
+            });
+
+            this.showExhibitButton.setVisibility(View.VISIBLE);
+
+            showWorksButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showWorksInfo(currLocation);
+                }
+            });
+            this.showWorksButton.setVisibility(View.VISIBLE);
+        } else {
+            this.showExhibitButton.setVisibility(View.GONE);
+            this.showWorksButton.setVisibility(View.GONE);
+        }
+
     }
 
     private void populateFloorSpinner() {
@@ -367,15 +364,6 @@ public class NavigateFragment extends Fragment {
         }
     }
 
-    private void enableFollow() {
-        this.setFollow(true);
-    }
-
-    private void disableFollow() {
-        this.setFollow(false);
-    }
-
-
     private void setFollow(boolean follow) {
         this.follow = follow;
         this.crosshairButton.setVisibility((follow ? View.GONE : View.VISIBLE));
@@ -387,6 +375,14 @@ public class NavigateFragment extends Fragment {
         } else {
             this.geomarkerImageView.setVisibility(View.GONE);
         }
+    }
+
+    private void enableFollow() {
+        this.setFollow(true);
+    }
+
+    private void disableFollow() {
+        this.setFollow(false);
     }
 
     private void showExhibitInfo(int exhibitID) {
@@ -411,6 +407,50 @@ public class NavigateFragment extends Fragment {
                 exhibitFrameContainer.setVisibility(View.GONE);
             }
         });
+    }
+
+    private void showWorksInfo(FloorLocation floorLoc) {
+
+    }
+
+    private void setupLearnFeatures() {
+        floorImageView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(currLocation != null) {
+                    Log.d(TAG, "Touch coordinates : " + String.valueOf(event.getX()) + "x" + String.valueOf(event.getY()));
+
+                    currLocation.setFloorName(changeFloorSpinner.getItemAtPosition(changeFloorSpinner.getSelectedItemPosition()).toString());
+
+                    double floorImageWidth = floorImageView.getWidth();
+                    double floorImageHeight = floorImageView.getHeight();
+
+                    currLocation.setLocX(event.getX() / floorImageWidth);
+                    currLocation.setLocY(event.getY() / floorImageHeight);
+                    currLocation.setLocRatio(floorImageWidth / floorImageHeight);
+
+                    InternalDataBase internalDataBase = new InternalDataBase(getActivity());
+                    internalDataBase.addLocation(currLocation);
+
+                    moveGeoMarker(currLocation);
+                }
+                return true;
+            }
+        });
+    }
+
+    private void setupPhillipsHeading() {
+        String text = "" +
+                "<font color=#75a0ae>P</font>" +
+                "<font color=#d76c4a>h</font>" +
+                "<font color=#7983b2>i</font>" +
+                "<font color=#d9a94f>l</font>" +
+                "<font color=#9dd8d3>l</font>" +
+                "<font color=#b4bb66>i</font>" +
+                "<font color=#e57524>p</font>" +
+                "<font color=#9bc2be>s</font>" +
+                " <font color=#999999>FIND</font>";
+        phillipsHeading.setText(Html.fromHtml(text));
     }
 
 

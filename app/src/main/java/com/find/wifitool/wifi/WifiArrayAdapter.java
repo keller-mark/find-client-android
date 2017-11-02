@@ -47,8 +47,7 @@ public class WifiArrayAdapter extends ArrayAdapter<WifiObject> {
 
         // Getting UI components
         TextView wifiName = (TextView) convertView.findViewById(R.id.wifiName);
-        TextView wifiGroup = (TextView) convertView.findViewById(R.id.fieldGrpName);
-        TextView wifiUser = (TextView) convertView.findViewById(R.id.fieldUsrName);
+        TextView wifiNameRaw = (TextView) convertView.findViewById(R.id.wifiNameRaw);
 
         Button setExhibitButton = (Button) convertView.findViewById(R.id.setExhibitButton);
         setExhibitButton.setOnClickListener(new View.OnClickListener() {
@@ -116,9 +115,8 @@ public class WifiArrayAdapter extends ArrayAdapter<WifiObject> {
         FloorLocation floorLocation = internalDataBase.getLocation(wifiItem.wifiName);
 
         // Setting UI components
-        wifiName.setText(floorLocation.getLocNamePretty() + " (" + wifiItem.wifiName + ")");
-        wifiGroup.setText(wifiItem.grpName);
-        wifiUser.setText(wifiItem.userName);
+        wifiName.setText(floorLocation.getLocNamePretty());
+        wifiNameRaw.setText(wifiItem.wifiName);
 
         return convertView;
     }

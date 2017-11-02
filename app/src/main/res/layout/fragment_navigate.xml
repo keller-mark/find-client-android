@@ -21,6 +21,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <TextView
+                android:id="@+id/phillipsHeading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Phillips FIND"
+                fontPath="fonts/oswald/Oswald-Light.ttf"
+                android:gravity="center_horizontal"
+                android:textSize="42dp"/>
+
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -45,10 +54,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Determining"
+                fontPath="fonts/quattrocento/Quattrocento-Regular.ttf"
                 android:layout_marginTop="10dp"
                 android:textSize="32sp"
                 android:textColor="#757575"
-                android:textStyle="normal|bold"
                 android:layout_gravity="center_horizontal"/>
 
 
@@ -83,7 +92,13 @@
                 android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Show Nearby Exhibit"/>
+                android:text="About Nearby Exhibit"/>
+            <Button
+                android:id="@+id/showWorksButton"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Show Nearby Works"/>
 
         </LinearLayout>
 
@@ -107,8 +122,7 @@
                 android:layout_height="50dp"
                 android:layout_gravity="right"
                 android:src="@drawable/icon_x"
-                android:scaleType="fitCenter"
-                >
+                android:scaleType="fitCenter">
 
             </ImageButton>
 
