@@ -95,4 +95,8 @@ public class FloorLocation {
         this._locExhibitID = _locExhibitID;
     }
 
+    public boolean equals(FloorLocation other) {
+        return other.getLocName().equals(this.getLocName());
+    }
+
 }

@@ -7,10 +7,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -34,7 +34,6 @@ import android.widget.Toast;
 
 import com.find.wifitool.database.FloorLocation;
 import com.find.wifitool.database.InternalDataBase;
-import com.find.wifitool.database.MuseumExhibit;
 import com.find.wifitool.internal.Constants;
 import com.find.wifitool.internal.Utils;
 import com.find.wifitool.wifi.WifiIntentReceiver;
@@ -222,14 +221,20 @@ public class NavigateFragment extends Fragment {
             InternalDataBase internalDataBase = new InternalDataBase(getActivity());
             FloorLocation savedLoc = internalDataBase.getLocation(currLocationName);
             if(savedLoc != null) {
-                currLocView.setText(savedLoc.getLocNamePretty());
-                currLocation = savedLoc;
+                if(currLocation == null || !currLocation.equals(savedLoc)) {
+                    currLocView.setText(savedLoc.getLocNamePretty());
+                    currLocation = savedLoc;
 
-                if(follow) {
-                    updateFloorImage(savedLoc.getFloorName());
-                    moveGeoMarker(savedLoc);
+                    if (follow) {
+                        updateFloorImage(savedLoc.getFloorName());
+                        moveGeoMarker(savedLoc);
 
-                    enableShowExhibitButton();
+                        enableShowExhibitButton();
+                    }
+
+                    // Vibrate for 500 milliseconds to alert about new location
+                    Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                    v.vibrate(500);
                 }
             } else {
                 currLocView.setText(currLocationName);
