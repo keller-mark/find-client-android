@@ -67,6 +67,7 @@ public class WifiIntentReceiver extends IntentService {
         try {
             mWifiData = new WifiData();
             mWifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+            mWifiManager.startScan();
 
             JSONArray wifiResultsArray = new JSONArray();
             List<ScanResult> mResults = mWifiManager.getScanResults();
@@ -94,6 +95,8 @@ public class WifiIntentReceiver extends IntentService {
 
         // Send the packet to server
         sendPayload(eventName, serverName, wifiFingerprint);
+
+
 
     }
 
