@@ -54,6 +54,7 @@ public class Constants {
     // Hard-coded exhibit details (for the sake of time this semester)
     public static final MuseumExhibit exhibit1 = new MuseumExhibit(R.string.exhibit1_title, R.string.exhibit1_subtitle, R.string.exhibit1_description, R.drawable.exhibit1_image);
     public static final MuseumExhibit exhibit2 = new MuseumExhibit(R.string.exhibit2_title, R.string.exhibit2_subtitle, R.string.exhibit2_description, R.drawable.exhibit2_image);
+    public static final MuseumExhibit exhibit3 = new MuseumExhibit(R.string.exhibit3_title, R.string.exhibit3_subtitle, R.string.exhibit3_description, R.drawable.exhibit3_image);
 
     public static final Map<Integer, MuseumExhibit> exhibitMap;
     static
@@ -61,5 +62,6 @@ public class Constants {
         exhibitMap = new HashMap<Integer, MuseumExhibit>();
         exhibitMap.put(1, exhibit1);
         exhibitMap.put(2, exhibit2);
+        exhibitMap.put(3, exhibit3);
     }
 }

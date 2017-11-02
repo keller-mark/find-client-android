@@ -20,6 +20,10 @@
     <string name="exhibit2_subtitle">Jacob Lawrence</string>
     <string name="exhibit2_description">Jacob Lawrence\'s Migration Series (1940–41), a sequence of 60 paintings, depicts the mass movement of African Americans from the rural South to the urban North between World War I and World War II—a development that had received little previous public attention.\n\nLawrence spent months distilling the subject into captions and preliminary drawings and preparing 60 boards with the help of his wife, artist Gwendolyn Knight. He created the paintings in tempera, a water-base paint that dries rapidly. To keep the colors consistent, Lawrence applied one hue at a time to every painting where it was to appear, requiring him to plan all 60 paintings in detail at once.</string>
 
+    <string name="exhibit3_title">ART AND WELLNESS</string>
+    <string name="exhibit3_subtitle">Creative Aging</string>
+    <string name="exhibit3_description">Creative Aging features artwork from the Phillips\’s ongoing partnership with Iona Senior Services, a nonprofit organization that provides support for the Washington, DC, area\’s older adults, along with their families and caregivers. Through this innovative collaboration, the Phillips works with Iona\’s Harry and Jeannette Weinberg Wellness and Arts Center, a program that fosters physical activity and intellectual and creative exploration, as well as social opportunities for individuals with memory loss, diabetes, stroke, Parkinson\’s, and vision impairment.</string>
+
     <string name="click_to_set">[click to set]</string>
     <string-array name="floors_array">
         <item>building</item>

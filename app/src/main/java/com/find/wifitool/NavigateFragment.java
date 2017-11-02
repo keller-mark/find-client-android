@@ -220,6 +220,7 @@ public class NavigateFragment extends Fragment {
 
             InternalDataBase internalDataBase = new InternalDataBase(getActivity());
             FloorLocation savedLoc = internalDataBase.getLocation(currLocationName);
+
             if(savedLoc != null) {
                 if(currLocation == null || !currLocation.equals(savedLoc)) {
                     currLocView.setText(savedLoc.getLocNamePretty());
@@ -408,8 +409,6 @@ public class NavigateFragment extends Fragment {
                 FragmentManager fm = getFragmentManager();
                 fm.beginTransaction().remove(fm.findFragmentById(R.id.frag_container)).commit();
                 exhibitFrameContainer.setVisibility(View.GONE);
-
-                //fragTwo.updateExhibit(museumExhibit);
             }
         });
     }
