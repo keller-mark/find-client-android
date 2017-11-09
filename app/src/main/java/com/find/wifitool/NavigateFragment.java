@@ -306,7 +306,7 @@ public class NavigateFragment extends Fragment {
             showWorksButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showWorksInfo(currLocation);
+                    showWorksInfo(currLocation.getLocExhibitID());
                 }
             });
             this.showWorksButton.setVisibility(View.VISIBLE);
@@ -409,8 +409,28 @@ public class NavigateFragment extends Fragment {
         });
     }
 
-    private void showWorksInfo(FloorLocation floorLoc) {
+    private void showWorksInfo(int exhibitID) {
+        exhibitFrameContainer.setVisibility(View.VISIBLE);
 
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+
+        fm.beginTransaction();
+        Fragment nearbyWorksFragment = new NearbyWorksFragment();
+        Bundle arguments = new Bundle();
+        arguments.putInt("exhibitID", exhibitID);
+        nearbyWorksFragment.setArguments(arguments);
+        ft.add(R.id.frag_container, nearbyWorksFragment);
+        ft.commit();
+
+        closeExhibitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getFragmentManager();
+                fm.beginTransaction().remove(fm.findFragmentById(R.id.frag_container)).commit();
+                exhibitFrameContainer.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void setupLearnFeatures() {
