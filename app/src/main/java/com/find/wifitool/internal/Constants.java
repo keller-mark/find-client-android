@@ -2,6 +2,7 @@ package com.find.wifitool.internal;
 
 import com.find.wifitool.R;
 import com.find.wifitool.database.MuseumExhibit;
+import com.find.wifitool.database.MuseumWork;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,9 +57,27 @@ public class Constants {
     public static final MuseumExhibit exhibit2 = new MuseumExhibit(R.string.exhibit2_title, R.string.exhibit2_subtitle, R.string.exhibit2_description, R.drawable.exhibit2_image);
     public static final MuseumExhibit exhibit3 = new MuseumExhibit(R.string.exhibit3_title, R.string.exhibit3_subtitle, R.string.exhibit3_description, R.drawable.exhibit3_image);
 
+    public static final MuseumWork work1 = new MuseumWork(1);
+    public static final MuseumWork work2 = new MuseumWork(2);
+    public static final MuseumWork work3 = new MuseumWork(3);
+    public static final MuseumWork work4 = new MuseumWork(4);
+    public static final MuseumWork work5 = new MuseumWork(5);
+
     public static final Map<Integer, MuseumExhibit> exhibitMap;
     static
     {
+        work1.setPhillipsID("0002");
+        work2.setPhillipsID("0003");
+        work3.setPhillipsID("0004");
+        work4.setPhillipsID("0005");
+        work5.setPhillipsID("0007");
+
+        exhibit1.addWork(work1);
+        exhibit1.addWork(work4);
+        exhibit2.addWork(work2);
+        exhibit2.addWork(work5);
+        exhibit3.addWork(work3);
+
         exhibitMap = new HashMap<Integer, MuseumExhibit>();
         exhibitMap.put(1, exhibit1);
         exhibitMap.put(2, exhibit2);
