@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.find.wifitool.internal.Constants;
+import com.gimbal.android.Gimbal;
 
 import java.util.UUID;
 
@@ -73,6 +74,9 @@ public class MainActivity extends AppCompatActivity
         // Calling function to set some default values if its our first run
         sharedPreferences = getSharedPreferences(Constants.PREFS_NAME, 0);
         setDefaultPrefs();
+
+        // Set up Gimbal
+        Gimbal.setApiKey(this.getApplication(), getString(R.string.gimbal_api_key));
 
         // Set the Navigate Fragment as default
         Fragment fragment = new NavigateFragment();

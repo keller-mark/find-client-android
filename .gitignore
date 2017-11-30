@@ -3,6 +3,7 @@
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
+/.idea/misc.xml
 .DS_Store
 /build
 /captures
@@ -11,3 +12,4 @@
 *.png
 *.aar
 app/src/main/assets
+**/*/res/values/secrets.xml
