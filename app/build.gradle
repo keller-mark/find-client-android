@@ -19,10 +19,6 @@ android {
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -34,8 +30,6 @@ dependencies {
     compile 'com.android.support:design:25.0.1'
     compile 'com.android.support:support-v4:23.4.0'
     testCompile 'junit:junit:4.12'
-    // Gimbal dependencies:
-    compile 'org.slf4j:slf4j-api:1.7.13'
-    compile group: 'com.gimbal.android.v2', name: 'gimbal-sdk', version: '+'
-    compile group: 'com.gimbal.android.v2', name: 'gimbal-slf4j-impl', version: '+'
+
+    compile 'com.google.android.gms:play-services-nearby:11.6.0'
 }

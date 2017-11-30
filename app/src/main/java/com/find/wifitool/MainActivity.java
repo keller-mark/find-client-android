@@ -17,11 +17,18 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.find.wifitool.internal.Constants;
-import com.gimbal.android.Gimbal;
+import com.google.android.gms.nearby.Nearby;
+import com.google.android.gms.nearby.messages.EddystoneUid;
+import com.google.android.gms.nearby.messages.Message;
+import com.google.android.gms.nearby.messages.MessageFilter;
+import com.google.android.gms.nearby.messages.MessageListener;
+import com.google.android.gms.nearby.messages.Strategy;
+import com.google.android.gms.nearby.messages.SubscribeOptions;
 
 import java.util.UUID;
 
@@ -34,6 +41,7 @@ public class MainActivity extends AppCompatActivity
 
     final private int REQUEST_CODE_ASK_PERMISSIONS = 1234;
     private SharedPreferences sharedPreferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +83,40 @@ public class MainActivity extends AppCompatActivity
         sharedPreferences = getSharedPreferences(Constants.PREFS_NAME, 0);
         setDefaultPrefs();
 
-        // Set up Gimbal
-        Gimbal.setApiKey(this.getApplication(), getString(R.string.gimbal_api_key));
+
+
+        // Subscribe for all Eddystone UIDs whose first 10 bytes (the "namespace")
+        // match MY_EDDYSTONE_UID_NAMESPACE.
+
+        // Note that the Eddystone UID namespace is separate from the namespace
+        // field of a Nearby Message.
+        MessageFilter messageFilter = new MessageFilter.Builder()
+                .includeEddystoneUids("00000000000000000001", null /* any instance */)
+                .build();
+        SubscribeOptions options = new SubscribeOptions.Builder()
+                .setStrategy(Strategy.BLE_ONLY)
+                .setFilter(messageFilter)
+                .build();
+
+        MessageListener messageListener = new MessageListener() {
+
+            @Override
+            public void onFound(final Message message) {
+                // Note: Checking the type shown for completeness, but is unnecessary
+                // if your message filter only includes a single type.
+                if (Message.MESSAGE_NAMESPACE_RESERVED.equals(message.getNamespace())
+                        && Message.MESSAGE_TYPE_EDDYSTONE_UID.equals(message.getType())) {
+                    // Nearby provides the EddystoneUid class to parse Eddystone UIDs
+                    // that have been found nearby.
+                    EddystoneUid eddystoneUid = EddystoneUid.from(message);
+
+                    Log.i(TAG, "Found Eddystone UID instance: " + eddystoneUid.getInstance());
+                }
+            }
+        };
+
+        Nearby.getMessagesClient(this).subscribe(messageListener, options);
+
 
         // Set the Navigate Fragment as default
         Fragment fragment = new NavigateFragment();
