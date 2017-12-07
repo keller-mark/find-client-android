@@ -16,7 +16,7 @@ public class Constants {
     private Constants() {
     }
 
-    private static final String PACKAGE_NAME = "om.find.wifitool";
+    private static final String PACKAGE_NAME = "com.find.wifitool";
 
     public static final boolean LEARN_MODE = true;
 
@@ -33,7 +33,7 @@ public class Constants {
 
     //Default values
     public static final String DEFAULT_USERNAME = "user"; // not used
-    public static final String DEFAULT_GROUP =  "pvc2017_avw6";
+    public static final String DEFAULT_GROUP =  "pvc2017_avw9";
     public static final String DEFAULT_SERVER = "https://ml.internalpositioning.com/";
     public static final String DEFAULT_LOCATION_NAME = "location";
     public static final int DEFAULT_TRACKING_INTERVAL = 5;
@@ -64,6 +64,8 @@ public class Constants {
     public static final MuseumWork work5 = new MuseumWork(5);
 
     public static final Map<Integer, MuseumExhibit> exhibitMap;
+    public static final HashMap<Integer, MuseumWork> beaconWorkMap;
+
     static
     {
         work1.setPhillipsID("0002");
@@ -72,15 +74,19 @@ public class Constants {
         work4.setPhillipsID("0005");
         work5.setPhillipsID("0007");
 
-        exhibit1.addWork(work1);
-        exhibit1.addWork(work4);
-        exhibit2.addWork(work2);
-        exhibit2.addWork(work5);
-        exhibit3.addWork(work3);
+        beaconWorkMap = new HashMap<Integer, MuseumWork>();
+
+        beaconWorkMap.put(1, work1);
+        beaconWorkMap.put(2, work2);
+        beaconWorkMap.put(3, work3);
+        beaconWorkMap.put(4, work4);
+        beaconWorkMap.put(5, work5);
 
         exhibitMap = new HashMap<Integer, MuseumExhibit>();
         exhibitMap.put(1, exhibit1);
         exhibitMap.put(2, exhibit2);
         exhibitMap.put(3, exhibit3);
     }
+
+
 }

@@ -1,20 +1,23 @@
 package com.find.wifitool.database;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
-import java.net.URL;
+import android.support.annotation.NonNull;
+import android.widget.ImageView;
 
 /**
  * Created by markkeller on 11/9/17.
  */
 
-public class MuseumWork {
+public class MuseumWork implements Comparable<MuseumWork> {
     private int workID;
 
     private String phillips_id, title, maker, date_made, culture, materials, credit_line, item_name, movement, century, lifespan, continent, gender, year;
 
     private Bitmap bmp = null;
+
+    private double distance = 0.00;
+
+    private ImageView iv = null;
 
 
     public MuseumWork(int workID) {
@@ -33,21 +36,34 @@ public class MuseumWork {
         this.phillips_id = phillips_id;
     }
 
-    public Bitmap loadWorkImage() {
-
-        if(this.bmp == null && this.phillips_id != null) {
-            try {
-                URL url = new URL(MuseumWork.generateImageURL(this.phillips_id));
-                this.bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        return this.bmp;
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 
-    private static String generateImageURL(String phillips_id) {
-        return "http://www.phillipscollection.org/willo/w/size3/" + phillips_id + "w.jpg";
+    public double getDistance() {
+        return this.distance;
+    }
+
+    public void setImageView(ImageView iv) {
+        this.iv = iv;
+    }
+
+    public ImageView getImageView() {
+        return this.iv;
+    }
+
+
+
+    public String getImageURL() {
+        return "http://www.phillipscollection.org/willo/w/size3/" + this.phillips_id + "w.jpg";
+    }
+
+    @Override
+    public int compareTo(@NonNull MuseumWork another) {
+        if(another.getDistance() == 0.0) {
+            return 1;
+        } else {
+            return (this.getDistance() - another.getDistance() > 0.0 ? 1 : -1);
+        }
     }
 }

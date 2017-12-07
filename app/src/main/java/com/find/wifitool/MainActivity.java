@@ -2,6 +2,7 @@ package com.find.wifitool;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -12,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,8 +23,11 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.find.wifitool.database.MuseumWork;
 import com.find.wifitool.internal.Constants;
 import com.google.android.gms.nearby.Nearby;
+import com.google.android.gms.nearby.messages.BleSignal;
+import com.google.android.gms.nearby.messages.Distance;
 import com.google.android.gms.nearby.messages.EddystoneUid;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageFilter;
@@ -100,18 +105,76 @@ public class MainActivity extends AppCompatActivity
 
         MessageListener messageListener = new MessageListener() {
 
+            /**
+             * Called when a message is discovered nearby.
+             */
             @Override
-            public void onFound(final Message message) {
-                // Note: Checking the type shown for completeness, but is unnecessary
-                // if your message filter only includes a single type.
+            public void onFound(final Message message) { }
+
+            /**
+             * Called when the Bluetooth Low Energy (BLE) signal associated with a message changes.
+             *
+             * This is currently only called for BLE beacon messages.
+             *
+             * For example, this is called when we see the first BLE advertisement
+             * frame associated with a message; or when we see subsequent frames with
+             * significantly different received signal strength indicator (RSSI)
+             * readings.
+             *
+             * For more information, see the MessageListener Javadocs.
+             */
+            @Override
+            public void onBleSignalChanged(final Message message, final BleSignal bleSignal) { }
+
+            /**
+             * Called when Nearby's estimate of the distance to a message changes.
+             *
+             * This is currently only called for BLE beacon messages.
+             *
+             * For more information, see the MessageListener Javadocs.
+             */
+            @Override
+            public void onDistanceChanged(final Message message, final Distance distance) {
                 if (Message.MESSAGE_NAMESPACE_RESERVED.equals(message.getNamespace())
                         && Message.MESSAGE_TYPE_EDDYSTONE_UID.equals(message.getType())) {
                     // Nearby provides the EddystoneUid class to parse Eddystone UIDs
                     // that have been found nearby.
                     EddystoneUid eddystoneUid = EddystoneUid.from(message);
+                    long instance = Long.parseLong(eddystoneUid.getInstance(), 16);
 
-                    Log.i(TAG, "Found Eddystone UID instance: " + eddystoneUid.getInstance());
+                    Log.i(TAG, "Eddystone-UID " + eddystoneUid.getInstance() + " has new distance: " + distance.getMeters());
+
+                    Log.d(TAG, "Eddystone Instance: " + instance);
+
+                    MuseumWork targetWork = Constants.beaconWorkMap.get((int)instance);
+                    targetWork.setDistance(distance.getMeters());
+
+                    emitBeaconUpdate();
                 }
+            }
+
+            /**
+             * Called when a message is no longer detectable nearby.
+             */
+            @Override
+            public void onLost(final Message message) {
+
+                if (Message.MESSAGE_NAMESPACE_RESERVED.equals(message.getNamespace())
+                        && Message.MESSAGE_TYPE_EDDYSTONE_UID.equals(message.getType())) {
+
+                    EddystoneUid eddystoneUid = EddystoneUid.from(message);
+                    long instance = Long.parseLong(eddystoneUid.getInstance(), 16);
+
+                    Log.i(TAG, "Eddystone Lost message: " + message);
+
+
+
+                    MuseumWork targetWork = Constants.beaconWorkMap.get((int) instance);
+                    targetWork.setDistance(0.0);
+
+                    emitBeaconUpdate();
+                }
+
             }
         };
 
@@ -166,6 +229,11 @@ public class MainActivity extends AppCompatActivity
             editor.putBoolean(Constants.IS_FIRST_RUN, false);
             editor.apply();
         }
+    }
+
+    private void emitBeaconUpdate() {
+        Intent intent = new Intent("beacon-update");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     @Override
