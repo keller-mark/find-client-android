@@ -8,8 +8,4 @@
 /build
 /captures
 .externalNativeBuild
-*.jpg
-*.png
-*.aar
-app/src/main/assets
 **/*/res/values/secrets.xml
