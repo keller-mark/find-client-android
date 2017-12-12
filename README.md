@@ -44,23 +44,23 @@ Configure beacons as Eddystone-UID beacons in the namespace `0000000000000000000
 
 *About Nearby Exhibit*
 
-<img src="screenshots/exhibit_info_1.png" alt="Exhibit Info Activity" width="200">
+<img src="screenshots/exhibit_info_1.png" alt="Exhibit Info Activity" width="300">
 
 *Nearby Works*
 
-<img src="screenshots/nearby_works.gif" alt="Nearby Works Activity" width="200">
+<img src="screenshots/nearby_works.gif" alt="Nearby Works Activity" width="300">
 
 *Learn Mode - Menu*
 
-<img src="screenshots/menu.png" alt="Menu" width="200">
+<img src="screenshots/menu.png" alt="Menu" width="300">
 
 *Learn Mode - Locations*
 
-<img src="screenshots/all_locations.png" alt="Locations" width="200">
+<img src="screenshots/all_locations.png" alt="Locations" width="300">
 
 *Learn Mode - Add Location*
 
-<img src="screenshots/add_location.png" alt="Add Location" width="200">
+<img src="screenshots/add_location.png" alt="Add Location" width="300">
 
 ----------
 
