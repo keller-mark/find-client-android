@@ -1,8 +1,10 @@
 # Phillips FIND
 
 This app is an extension of the FIND Android Client indoor positioning system, built for the needs of the Phillips Collection in DC, as my fall 2017 project for the FIRE program at the University of Maryland.
- - "Navigate": view your current room on a floorplan of the Phillips Collection, based on FIND's "Track" function (RSSI-based Wifi positioning)
- - "Learn": For museum curators, connect to the server and then submit fingerprints. (temporary)
+ - **Navigate**: view your current room on a floorplan of the Phillips Collection, based on FIND's "Track" function (RSSI-based Wifi positioning)
+    - **Exhibit Info**: view a featured image and description about the exhibit in the current location
+    - **Nearby Works**: view nearby works, animated so that images of works grow as they are moved towards and shrink as they are moved away from
+ - **Learn**: For museum curators, create new locations, associate locations with exhibits, and select locations on the floor plan (connects to the FIND server to submit fingerprints) (temporary)
 
 ----------
 
