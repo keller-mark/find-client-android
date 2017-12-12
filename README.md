@@ -1,9 +1,8 @@
 # Phillips FIND
 
-This app is an extension of the FIND Android Client indoor positioning system, built for the needs of the Phillips Collection in DC.
+This app is an extension of the FIND Android Client indoor positioning system, built for the needs of the Phillips Collection in DC, as my fall 2017 project for the FIRE program at the University of Maryland.
  - "Navigate": view your current room on a floorplan of the Phillips Collection, based on FIND's "Track" function (RSSI-based Wifi positioning)
- - "Explore": interact with an Apple-watch-inspired list of the artwork nearby
- - "Learn": connect to the server and then submit fingerprints. (temporary)
+ - "Learn": For museum curators, connect to the server and then submit fingerprints. (temporary)
 
 ----------
 
@@ -13,86 +12,55 @@ The **Framework for Internal Navigation and Discovery (FIND)** allows you to use
 To learn more about it or to run your own private server, check out https://github.com/schollz/find
 
 ----------
-**Requirements**
- 1. Android Studio 
- 2. Android Mobile with WiFi adapter
-
-**Dependencies**
- 1. OkHttp (Async HTTP library)
-
-If you use Android Studio these dependencies are managed automatically for you. (When you first import the project you'll be asked to sync the relevant modules from the SDK manager.)
-
 **Getting Started**
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
 
-As usual, you get started by cloning the project to your local machine:
+Clone the project to your local machine:
 ```
-$ git clone git://github.com/uncleashi/find-app-android
+$ git clone git://github.com/keller-mark/find-app-android
 ```
-**Building and Running**
-Import the FindWifiTool app into Android Studio as an existing project and select :
-```Run > Run app ```
 
-**Default Configuration**
- 1. User: user
- 2. Group: group
- 3. Server: https://ml.internalpositioning.com
- 4. Learn Period: : 3 min
- 5. Track Interval: 5 sec
- 6. Learn Interval: 5 sec
+Import the app into Android Studio as an existing project.
 
-**Wifi-Fingerprint:**
-```json
-{
-"group":"some group",
-	   "username":"some user",
-	   "location":"some place",
-	   "time":12309123,
-	   "wifi-fingerprint":
-	   [
-	      {
-	         "mac":"AA:AA:AA:AA:AA:AA",
-	         "rssi":-45
-	      },
-	      {
-	         "mac":"BB:BB:BB:BB:BB:BB",
-	         "rssi":-55
-	      }
-   ]
-}
+To turn learn mode on and off, toggle the `LEARN_MODE` boolean variable in `internal/Constants.java`.
+
+**Beacon Functionality**
+To use beacon functionality to show nearby works, obtain a Nearby Messages API key from the Google Developer console. See [https://developers.google.com/nearby/messages/android/get-started#step_3_get_an_api_key](https://developers.google.com/nearby/messages/android/get-started#step_3_get_an_api_key) for instructions.
+
+Create a `secrets.xml` file in the `app/res/values` directory. Add a string resource 
 ```
-Above JSON is sent via POST https://ml.internalpositioning.com/learn or POST https://ml.internalpositioning.com/track (or the server set by you ) depending on whether it is *Learning* or *Tracking*.
+<string name="nearby_messages_api_key">YOUR_API_KEY_HERE</string>
+```
+
+Configure beacons as Eddystone-UID beacons in the namespace `00000000000000000001`. For each beacon instance, associate the int value of the instance with a `MuseumWork` object in the `beaconWorkMap` in `internal/Constants.java`.
 
 ----------
 **App Screenshots**
 
-*Create Activity*
+*Main Activity - Track on Floor Plan*
 
-![alt tag](screenshots/create.png "Learn Activity")
+![alt tag](screenshots/floor_plan.png "Main Activity")
 
-*Learn Activity*
+*About Nearby Exhibit*
 
-![alt tag](screenshots/learn.png "Learning Activity")
+![alt tag](screenshots/exhibit_info_1.png "Exhibit Info Activity")
 
-*Track Activity*
+*Nearby Works*
 
-![alt tag](screenshots/track.png "Track Activity")
+![alt tag](screenshots/nearby_works.gif "Nearby Works Activity")
 
-*Setting Activity*
+*Learn Mode - Menu*
 
-![alt tag](screenshots/settings.png "Settings Activity")
+![alt tag](screenshots/menu.png "Menu")
 
-*Nav-Header*
+*Learn Mode - Locations*
 
-![alt tag](screenshots/nav-header.png "Nav Header")
+![alt tag](screenshots/all_locations.png "Locations")
 
-----------
+*Learn Mode - Add Location*
 
-**Authors**
-
- - Akshay Dekate
- - Shailesh Srivastava
+![alt tag](screenshots/add_location.png "Add Location")
 
 ----------
 
