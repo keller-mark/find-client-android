@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
+import java.util.Random;
+
 /**
  * Created by markkeller on 11/9/17.
  */
@@ -19,9 +21,17 @@ public class MuseumWork implements Comparable<MuseumWork> {
 
     private ImageView iv = null;
 
+    private double theta = 0.0;
+
 
     public MuseumWork(int workID) {
         this.workID = workID;
+        Random rand = new Random();
+        this.theta = rand.nextDouble() * 2*Math.PI;
+    }
+
+    public double getTheta() {
+        return this.theta;
     }
 
     public int getWorkID() {

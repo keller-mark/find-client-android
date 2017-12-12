@@ -150,9 +150,21 @@ public class NearbyWorksFragment extends Fragment {
             double distance = aWork.getDistance();
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)iv.getLayoutParams();
             if(distance != 0.0) {
-                // l t r b
                 iv.setVisibility(View.VISIBLE);
-                params.setMargins((int)distance*200, (int)distance*100, 0, 0);
+
+                double theta = aWork.getTheta();
+                double r = distance*300;
+                double ivLength = (1/distance)*300;
+
+                iv.getLayoutParams().height = (int)ivLength;
+                iv.getLayoutParams().width = (int)ivLength;
+                iv.requestLayout();
+
+
+                double x = (r*Math.cos(theta) - ivLength / 2) + (workCanvasFrameWidth/2);
+                double y = r*Math.sin(theta) - ivLength / 2 + (workCanvasFrameHeight/2);
+                // l t r b
+                params.setMargins((int)x, (int)y, 0, 0);
                 iv.setLayoutParams(params);
             } else {
                 iv.setVisibility(View.INVISIBLE);
@@ -174,8 +186,6 @@ public class NearbyWorksFragment extends Fragment {
             mListener.onFragmentInteraction(uri);
         }
     }
-
-
 
 
     @Override
