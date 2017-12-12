@@ -40,7 +40,7 @@ Configure beacons as Eddystone-UID beacons in the namespace `0000000000000000000
 
 *Main Activity - Track on Floor Plan*
 
-<img src="screenshots/floor_plan.png" alt="Main Activity" width="200">
+<img src="screenshots/floor_plan.png" alt="Main Activity" width="300">
 
 *About Nearby Exhibit*
 
