@@ -40,27 +40,27 @@ Configure beacons as Eddystone-UID beacons in the namespace `0000000000000000000
 
 *Main Activity - Track on Floor Plan*
 
-![alt tag](screenshots/floor_plan.png "Main Activity")
+<img src="screenshots/floor_plan.png" alt="Main Activity" width="200">
 
 *About Nearby Exhibit*
 
-![alt tag](screenshots/exhibit_info_1.png "Exhibit Info Activity")
+<img src="screenshots/exhibit_info_1.png" alt="Exhibit Info Activity" width="200">
 
 *Nearby Works*
 
-![alt tag](screenshots/nearby_works.gif "Nearby Works Activity")
+<img src="screenshots/nearby_works.gif" alt="Nearby Works Activity" width="200">
 
 *Learn Mode - Menu*
 
-![alt tag](screenshots/menu.png "Menu")
+<img src="screenshots/menu.png" alt="Menu" width="200">
 
 *Learn Mode - Locations*
 
-![alt tag](screenshots/all_locations.png "Locations")
+<img src="screenshots/all_locations.png" alt="Locations" width="200">
 
 *Learn Mode - Add Location*
 
-![alt tag](screenshots/add_location.png "Add Location")
+<img src="screenshots/add_location.png" alt="Add Location" width="200">
 
 ----------
 
